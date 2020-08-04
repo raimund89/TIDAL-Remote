@@ -25,7 +25,10 @@ import androidx.ui.res.imageResource
 import androidx.ui.res.vectorResource
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
+import net.rfrentrop.tidalremote.screens.ScreenCollection
 import net.rfrentrop.tidalremote.screens.ScreenHome
+import net.rfrentrop.tidalremote.screens.ScreenSearch
+import net.rfrentrop.tidalremote.screens.ScreenVideos
 import net.rfrentrop.tidalremote.ui.Screen
 import net.rfrentrop.tidalremote.ui.TIDALRemoteTheme
 
@@ -57,9 +60,9 @@ fun MainContent(page: MutableState<Screen>) {
     Column(modifier = Modifier.weight(1f, true)) {
         when(page.value) {
             Screen.Home -> ScreenHome()
-            Screen.Videos -> Text("Videos")
-            Screen.Search -> Text("Search")
-            Screen.Collection -> Text("Collection")
+            Screen.Videos -> ScreenVideos()
+            Screen.Search -> ScreenSearch()
+            Screen.Collection -> ScreenCollection()
             Screen.Album -> TODO()
             Screen.Artist -> TODO()
             Screen.Playlist -> TODO()
