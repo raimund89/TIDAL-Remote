@@ -25,19 +25,27 @@ import androidx.ui.res.imageResource
 import androidx.ui.res.vectorResource
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
-import net.rfrentrop.tidalremote.screens.ScreenCollection
-import net.rfrentrop.tidalremote.screens.ScreenHome
-import net.rfrentrop.tidalremote.screens.ScreenSearch
-import net.rfrentrop.tidalremote.screens.ScreenVideos
+import net.rfrentrop.tidalremote.screens.*
+import net.rfrentrop.tidalremote.tidalapi.TidalManager
+import net.rfrentrop.tidalremote.tidalapi.TidalUser
 import net.rfrentrop.tidalremote.ui.Screen
 import net.rfrentrop.tidalremote.ui.TIDALRemoteTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val manager = TidalManager(this)
+        val user = TidalUser()
+        manager.init(user)
+        manager.login()
+
         setContent {
 
+            // The current page
             val page = state { Screen.Home }
+            // If the user is updated, update the content here
+            val userstate = state { user }
 
             TIDALRemoteTheme {
                 // A surface container using the 'background' color from the theme
@@ -45,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
                     Column(Modifier.fillMaxHeight()) {
 
-                        MainContent(page)
+                        MainContent(this@MainActivity, page, manager)
                         Player()
                         AppBar(page)
                     }
@@ -56,17 +64,18 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun MainContent(page: MutableState<Screen>) {
+fun MainContent(activity: MainActivity, page: MutableState<Screen>, manager: TidalManager) {
     Column(modifier = Modifier.weight(1f, true)) {
         when(page.value) {
-            Screen.Home -> ScreenHome()
-            Screen.Videos -> ScreenVideos()
-            Screen.Search -> ScreenSearch()
-            Screen.Collection -> ScreenCollection()
+            Screen.Home -> ScreenHome(page, manager)
+            Screen.Videos -> ScreenVideos(page, manager)
+            Screen.Search -> ScreenSearch(page, manager)
+            Screen.Collection -> ScreenCollection(page, manager)
             Screen.Album -> TODO()
             Screen.Artist -> TODO()
             Screen.Playlist -> TODO()
             Screen.Track -> TODO()
+            Screen.Settings -> ScreenSettings(activity, page, manager)
         }
     }
 }

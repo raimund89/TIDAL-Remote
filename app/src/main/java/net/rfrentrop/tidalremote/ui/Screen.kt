@@ -6,6 +6,8 @@ enum class Screen {
     Search,
     Collection,
 
+    Settings,
+
     Album,
     Artist,
     Playlist,
