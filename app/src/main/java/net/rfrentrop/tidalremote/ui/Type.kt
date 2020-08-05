@@ -28,5 +28,6 @@ val typography = Typography(
         body1 = defaultTypography.body1.copy(fontFamily = appFontFamily, fontSize = 18.sp, fontWeight = FontWeight.Bold),
         body2 = defaultTypography.body2.copy(fontFamily = appFontFamily, fontSize = 16.sp, fontWeight = FontWeight.SemiBold),
         h1 = defaultTypography.h1.copy(fontFamily = appFontFamily, fontSize = 34.sp, fontWeight = FontWeight.Bold),
-        h2 = defaultTypography.h2.copy(fontFamily = appFontFamily, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        h2 = defaultTypography.h2.copy(fontFamily = appFontFamily, fontSize = 28.sp, fontWeight = FontWeight.Bold),
+        h3 = defaultTypography.h3.copy(fontFamily = appFontFamily, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
 )
