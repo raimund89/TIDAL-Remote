@@ -1,6 +1,8 @@
 package net.rfrentrop.tidalremote.screens
 
-import androidx.compose.*
+import androidx.compose.Composable
+import androidx.compose.MutableState
+import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.Icon
@@ -11,6 +13,7 @@ import androidx.ui.graphics.Color
 import androidx.ui.input.TextFieldValue
 import androidx.ui.layout.Row
 import androidx.ui.layout.padding
+import androidx.ui.material.IconButton
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Surface
 import androidx.ui.res.vectorResource
@@ -31,7 +34,7 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
         modifier = Modifier.padding(10.dp)
     ) {
 
-        var searchval by savedInstanceState(saver = TextFieldValue.Saver) { TextFieldValue() }
+        var searchval = savedInstanceState(saver = TextFieldValue.Saver) { TextFieldValue() }
 
         Surface(color = Color.White) {
             Row {
@@ -42,9 +45,9 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                 )
                 TextField(
                     modifier = Modifier.padding(15.dp) + Modifier.weight(1f, true),
-                    value = searchval,
+                    value = searchval.value,
                     onValueChange = {
-                        searchval = it
+                        searchval.value = it
                         // TODO: The last entered character is not searched now. Make this a queued system
                         if(!it.text.isBlank() && System.currentTimeMillis() - lastSearch > 1000L) {
                             lastSearch = System.currentTimeMillis()
@@ -57,11 +60,17 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                     textColor = Color.Gray,
                     cursorColor = Color.Gray
                 )
-                Icon(
+                IconButton(
                     modifier = Modifier.gravity(Alignment.CenterVertically) + Modifier.padding(end=10.dp),
-                    asset = vectorResource(id = R.drawable.ic_clear),
-                    tint = Color.Black
-                )
+                    onClick = {
+                        searchval.value = TextFieldValue()
+                    }
+                ) {
+                    Icon(
+                        asset = vectorResource(id = R.drawable.ic_clear),
+                        tint = Color.Black
+                    )
+                }
             }
         }
 
