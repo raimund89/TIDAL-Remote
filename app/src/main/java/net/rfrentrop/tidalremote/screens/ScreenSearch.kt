@@ -5,6 +5,7 @@ import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.Icon
 import androidx.ui.foundation.ScrollableColumn
+import androidx.ui.foundation.Text
 import androidx.ui.foundation.TextField
 import androidx.ui.graphics.Color
 import androidx.ui.input.TextFieldValue
@@ -24,6 +25,7 @@ import org.json.JSONObject
 fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
 
     val searchResult = state { JSONObject() }
+    var lastSearch = 0L
 
     ScrollableColumn(
         modifier = Modifier.padding(10.dp)
@@ -43,7 +45,13 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                     value = searchval,
                     onValueChange = {
                         searchval = it
-                        manager.search(it.text, searchResult)
+                        // TODO: The last entered character is not searched now. Make this a queued system
+                        if(!it.text.isBlank() && System.currentTimeMillis() - lastSearch > 1000L) {
+                            lastSearch = System.currentTimeMillis()
+                            manager.search(it.text, searchResult)
+                        }
+                        else
+                            manager.getExplore(searchResult)
                     },
                     textStyle = MaterialTheme.typography.h3,
                     textColor = Color.Gray,
@@ -56,5 +64,9 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                 )
             }
         }
+
+        Text(
+            text = searchResult.value.toString()
+        )
     }
 }

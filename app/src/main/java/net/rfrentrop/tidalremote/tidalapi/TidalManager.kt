@@ -86,8 +86,6 @@ class TidalManager (
         params["types"] = "ARTISTS,ALBUMS,TRACKS,PLAYLISTS,VIDEOS"
         params["query"] = text
 
-        Log.d("TidalManager", params.toString())
-
         val request = TidalRequest(
             meth = Request.Method.GET,
             url = API_LOCATION + "search",
@@ -102,6 +100,10 @@ class TidalManager (
         )
 
         queue.add(request)
+    }
+
+    fun getExplore(depot: MutableState<JSONObject>) {
+
     }
 
     override fun toString(): String {
