@@ -54,6 +54,7 @@ class TidalManager (
             listener = { response ->
                 user.username = username
                 user.userId = response.getInt("userId")
+                user.loggedIn = true
                 sessionId = response.getString("sessionId")
                 countryCode = response.getString("countryCode")
                 Log.d("TidalManager", this.toString())
@@ -67,6 +68,7 @@ class TidalManager (
     }
 
     fun relogin() {
+        user.loggedIn = false
         init(this.user)
         login()
     }
