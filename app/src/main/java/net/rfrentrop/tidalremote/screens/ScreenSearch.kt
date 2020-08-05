@@ -65,8 +65,89 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
             }
         }
 
-        Text(
-            text = searchResult.value.toString()
-        )
+        // Top Result
+        TopResult(page, searchResult.value.getJSONObject("topHit"))
+        // Tracks
+        for (i in 0 until searchResult.value.getJSONObject("tracks").getJSONArray("items").length()){
+            if(i>2)
+                break
+            TrackRow(page, searchResult.value.getJSONObject("tracks").getJSONArray("items").getJSONObject(i))
+        }
+        // Artists
+        for (i in 0 until searchResult.value.getJSONObject("artists").getJSONArray("items").length()){
+            if(i>2)
+                break
+            ArtistRow(page, searchResult.value.getJSONObject("artists").getJSONArray("items").getJSONObject(i))
+        }
+        // Albums
+        for (i in 0 until searchResult.value.getJSONObject("albums").getJSONArray("items").length()){
+            if(i>2)
+                break
+            AlbumRow(page, searchResult.value.getJSONObject("albums").getJSONArray("items").getJSONObject(i))
+        }
+        // Playlists
+        for (i in 0 until searchResult.value.getJSONObject("playlists").getJSONArray("items").length()){
+            if(i>2)
+                break
+            PlaylistRow(page, searchResult.value.getJSONObject("playlists").getJSONArray("items").getJSONObject(i))
+        }
+        // Videos
+        for (i in 0 until searchResult.value.getJSONObject("videos").getJSONArray("items").length()){
+            if(i>2)
+                break
+            VideoRow(page, searchResult.value.getJSONObject("videos").getJSONArray("items").getJSONObject(i))
+        }
     }
+}
+
+@Composable
+fun TopResult(page: MutableState<Screen>, top: JSONObject) {
+    top?.let {
+        when(top.getString("type")) {
+            "ARTISTS" -> {
+                ArtistRow(page, top)
+            }
+            "ALBUMS" -> {
+                AlbumRow(page, top)
+            }
+            "TRACKS" -> {
+                TrackRow(page, top)
+            }
+            "PLAYLISTS" -> {
+                PlaylistRow(page, top)
+            }
+            "VIDEOS" -> {
+                VideoRow(page, top)
+            }
+            else -> {
+                // Apparently the type is not supported yet? Show it instead
+                Text(top.getString("type"))
+            }
+        }
+    }
+}
+
+@Composable
+fun ArtistRow(page: MutableState<Screen>, artist: JSONObject) {
+    Text(artist.getString("name"))
+}
+
+@Composable
+fun AlbumRow(page: MutableState<Screen>, album: JSONObject) {
+    Text(album.getString("name"))
+}
+
+@Composable
+fun TrackRow(page: MutableState<Screen>, track: JSONObject) {
+    Text(track.getString("name"))
+}
+
+@Composable
+fun PlaylistRow(page: MutableState<Screen>, playlist: JSONObject) {
+    Text(playlist.getString("name"))
+}
+
+@Composable
+fun VideoRow(page: MutableState<Screen>, video: JSONObject) {
+    Text(video.getString("name"))
 }
