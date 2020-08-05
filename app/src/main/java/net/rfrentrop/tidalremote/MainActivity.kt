@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                     Column(Modifier.fillMaxHeight()) {
 
                         MainContent(this@MainActivity, page, manager)
-                        Player()
+                        Player(page, userstate.value)
                         AppBar(page)
                     }
                 }
@@ -81,9 +81,10 @@ fun MainContent(activity: MainActivity, page: MutableState<Screen>, manager: Tid
 }
 
 @Composable
-fun Player() {
+fun Player(page: MutableState<Screen>, user: TidalUser) {
     Column {
-        Divider(color = Color.DarkGray, thickness = 1.dp)
+        // TODO: This doesn't work. The state is not updated
+        Divider(color = if(user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
         Row(
             modifier = Modifier.height(70.dp),
             verticalGravity = Alignment.CenterVertically
@@ -97,15 +98,18 @@ fun Player() {
                 modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
             ) {
                 Text(
-                    text = "Hotel California",
-                    style = MaterialTheme.typography.body1,
-                    color = Color.White,
-                    overflow = TextOverflow.Ellipsis
+                        text = "Hotel California",
+                        style = MaterialTheme.typography.body1,
+                        color = Color.White,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
                 )
                 Text(
-                    text = "Eagles",
-                    style = MaterialTheme.typography.body2,
-                    color = Color.LightGray
+                        text = "Eagles",
+                        style = MaterialTheme.typography.body2,
+                        color = Color.LightGray,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
                 )
             }
 
