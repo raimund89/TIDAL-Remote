@@ -1,5 +1,7 @@
 package net.rfrentrop.tidalremote.screens
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.Composable
 import androidx.compose.MutableState
 import androidx.compose.state
@@ -29,12 +31,13 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
 
     val searchResult = state { JSONObject() }
     var lastSearch = 0L
+    val delayedSearch = Handler(Looper.myLooper()!!)
 
     ScrollableColumn(
         modifier = Modifier.padding(10.dp)
     ) {
 
-        var searchval = savedInstanceState(saver = TextFieldValue.Saver) { TextFieldValue() }
+        val searchval = savedInstanceState(saver = TextFieldValue.Saver) { TextFieldValue() }
 
         Surface(color = Color.White) {
             Row {
@@ -48,10 +51,19 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                     value = searchval.value,
                     onValueChange = {
                         searchval.value = it
+                        delayedSearch.removeCallbacksAndMessages(null)
                         // TODO: The last entered character is not searched now. Make this a queued system
-                        if(!it.text.isBlank() && System.currentTimeMillis() - lastSearch > 1000L) {
-                            lastSearch = System.currentTimeMillis()
-                            manager.search(it.text, searchResult)
+                        if(!it.text.isBlank()) {
+                            if(System.currentTimeMillis() - lastSearch > 1000L) {
+                                lastSearch = System.currentTimeMillis()
+                                manager.search(it.text, searchResult)
+                            }
+                            else {
+                                delayedSearch.postDelayed({
+                                    lastSearch = System.currentTimeMillis()
+                                    manager.search(it.text, searchResult)
+                                }, 1000)
+                            }
                         }
                         else
                             manager.getExplore(searchResult)
