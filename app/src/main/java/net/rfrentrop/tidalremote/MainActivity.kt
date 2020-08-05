@@ -83,6 +83,7 @@ fun MainContent(activity: MainActivity, page: MutableState<Screen>, manager: Tid
 @Composable
 fun Player(page: MutableState<Screen>, user: TidalUser) {
     Column {
+        // TODO: This doesn't work. The state is not updated
         Divider(color = if(user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
         Row(
             modifier = Modifier.height(70.dp),

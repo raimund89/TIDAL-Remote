@@ -214,6 +214,7 @@ fun ArtistRow(page: MutableState<Screen>, artist: JSONObject) {
     }
 }
 
+// TODO: Add album year
 @Composable
 fun AlbumRow(page: MutableState<Screen>, album: JSONObject) {
     Row(
@@ -261,6 +262,7 @@ fun AlbumRow(page: MutableState<Screen>, album: JSONObject) {
     }
 }
 
+// TODO: Add explicit/master/etc.
 @Composable
 fun TrackRow(page: MutableState<Screen>, track: JSONObject) {
     Row(
@@ -308,6 +310,7 @@ fun TrackRow(page: MutableState<Screen>, track: JSONObject) {
     }
 }
 
+// TODO: Add nr of tracks
 @Composable
 fun PlaylistRow(page: MutableState<Screen>, playlist: JSONObject) {
     Row(
@@ -350,6 +353,7 @@ fun PlaylistRow(page: MutableState<Screen>, playlist: JSONObject) {
     }
 }
 
+// TODO: Add duration
 @Composable
 fun VideoRow(page: MutableState<Screen>, video: JSONObject) {
     Row(
