@@ -1,7 +1,10 @@
 package net.rfrentrop.tidalremote.screens
 
-import android.util.Log
-import androidx.compose.*
+import android.os.Handler
+import android.os.Looper
+import androidx.compose.Composable
+import androidx.compose.MutableState
+import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
 import androidx.ui.core.Modifier
@@ -28,11 +31,12 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
 
     val searchResult = state { JSONObject() }
     var lastSearch = 0L
+    val delayedSearch = Handler(Looper.myLooper()!!)
 
     Column(
             modifier = Modifier.padding(10.dp)
     ) {
-        var searchval by savedInstanceState(saver = TextFieldValue.Saver) { TextFieldValue() }
+        val searchval = savedInstanceState(saver = TextFieldValue.Saver) { TextFieldValue() }
 
         Surface(color = Color.White) {
             Row {
@@ -43,13 +47,23 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                 )
                 TextField(
                         modifier = Modifier.padding(15.dp) + Modifier.weight(1f, true),
-                        value = searchval,
+                        value = searchval.value,
                         onValueChange = {
-                            searchval = it
-                            // TODO: The last entered character is not searched now. Make this a queued system
-                            if(!it.text.isBlank() && System.currentTimeMillis() - lastSearch > 1000L) {
-                                lastSearch = System.currentTimeMillis()
-                                manager.search(it.text, searchResult)
+                            searchval.value = it
+
+                            delayedSearch.removeCallbacksAndMessages(null)
+
+                            if(!it.text.isBlank()) {
+                                if(System.currentTimeMillis() - lastSearch > 1000L) {
+                                    lastSearch = System.currentTimeMillis()
+                                    manager.search(it.text, searchResult)
+                                }
+                                else {
+                                    delayedSearch.postDelayed({
+                                        lastSearch = System.currentTimeMillis()
+                                        manager.search(it.text, searchResult)
+                                    }, 1000)
+                                }
                             }
                             else
                                 manager.getExplore(searchResult)
@@ -58,11 +72,17 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                         textColor = Color.Gray,
                         cursorColor = Color.Gray
                 )
-                Icon(
+                IconButton(
                         modifier = Modifier.gravity(Alignment.CenterVertically) + Modifier.padding(end=10.dp),
-                        asset = vectorResource(id = R.drawable.ic_clear),
-                        tint = Color.Black
-                )
+                        onClick = {
+                            searchval.value = TextFieldValue()
+                        }
+                ) {
+                    Icon(
+                            asset = vectorResource(id = R.drawable.ic_clear),
+                            tint = Color.Black
+                    )
+                }
             }
         }
 
@@ -142,7 +162,7 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
 
 @Composable
 fun TopResult(page: MutableState<Screen>, top: JSONObject) {
-    top?.let {
+    top.let {
         when(top.getString("type")) {
             "ARTISTS" -> {
                 ArtistRow(page, top["value"] as JSONObject)
