@@ -6,21 +6,45 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import org.json.JSONObject
+import java.io.UnsupportedEncodingException
+import java.net.URLEncoder
 import java.nio.charset.Charset
 
 class TidalRequest(
-    url: String,
+    private val meth: Int = Method.POST,
+    private val url: String,
     private val headers: MutableMap<String, String>?,
     private val params: MutableMap<String, String>?,
     private val listener: Response.Listener<JSONObject>,
     errorListener: Response.ErrorListener
-): Request<JSONObject>(Method.POST, url, errorListener) {
+): Request<JSONObject>(meth, url, errorListener) {
     override fun getHeaders(): MutableMap<String, String> = headers ?: super.getHeaders()
 
     override fun getParams(): MutableMap<String, String> = params ?: super.getParams()
 
     override fun deliverResponse(response: JSONObject?) {
         listener.onResponse(response)
+    }
+
+    override fun getUrl(): String {
+        if(meth == Method.GET) {
+            val stringBuilder = StringBuilder(url)
+            var i = 1
+            params?.forEach {
+                try {
+                    val key = URLEncoder.encode(it.key, "UTF-8")
+                    val value = URLEncoder.encode(it.value, "UTF-8")
+
+                    val prefix = if (i == 1) "?" else "&"
+                    stringBuilder.append("$prefix$key=$value")
+                } catch (e: UnsupportedEncodingException) {
+                    e.printStackTrace()
+                }
+                i++
+            }
+            return stringBuilder.toString()
+        }
+        return super.getUrl()
     }
 
     override fun parseNetworkResponse(response: NetworkResponse?): Response<JSONObject> {

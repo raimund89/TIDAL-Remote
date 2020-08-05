@@ -2,8 +2,11 @@ package net.rfrentrop.tidalremote.tidalapi
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.MutableState
+import com.android.volley.Request
 import com.android.volley.toolbox.Volley
 import net.rfrentrop.tidalremote.MainActivity
+import org.json.JSONObject
 
 class TidalManager (
     val context: MainActivity
@@ -45,17 +48,17 @@ class TidalManager (
         params["password"] = password
 
         val request = TidalRequest(
-            API_LOCATION + "login/username",
-            headers,
-            params,
-            { response ->
+            url = API_LOCATION + "login/username",
+            headers = headers,
+            params = params,
+            listener = { response ->
                 user.username = username
                 user.userId = response.getInt("userId")
                 sessionId = response.getString("sessionId")
                 countryCode = response.getString("countryCode")
                 Log.d("TidalManager", this.toString())
             },
-            {
+            errorListener = {
                 it.printStackTrace()
             }
         )
@@ -66,6 +69,39 @@ class TidalManager (
     fun relogin() {
         init(this.user)
         login()
+    }
+
+    fun requestParams(): HashMap<String, String> {
+        val params = HashMap<String, String>()
+        params["sessionId"] = sessionId
+        params["countryCode"] = countryCode
+        return params
+    }
+
+    fun search(text: String, depot: MutableState<JSONObject>) {
+        val params = requestParams()
+        params["limit"] = "3"
+        params["offset"] = "0"
+        params["includeContributors"] = "true"
+        params["types"] = "ARTISTS,ALBUMS,TRACKS,PLAYLISTS,VIDEOS"
+        params["query"] = text
+
+        Log.d("TidalManager", params.toString())
+
+        val request = TidalRequest(
+            meth = Request.Method.GET,
+            url = API_LOCATION + "search",
+            headers = null,
+            params = params,
+            listener = { response ->
+                depot.value = response
+            },
+            errorListener = {
+                it.printStackTrace()
+            }
+        )
+
+        queue.add(request)
     }
 
     override fun toString(): String {
