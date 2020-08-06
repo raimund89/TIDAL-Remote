@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
 import androidx.compose.MutableState
+import androidx.compose.remember
 import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             // The current page
             val page = state { Screen.Home }
             // If the user is updated, update the content here
-            val userstate = state { user }
+            val userstate = remember { user }
 
             TIDALRemoteTheme {
                 // A surface container using the 'background' color from the theme
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                     Column(Modifier.fillMaxHeight()) {
 
                         MainContent(this@MainActivity, page, manager)
-                        Player(page, userstate.value)
+                        Player(page, userstate)
                         AppBar(page)
                     }
                 }
