@@ -1,16 +1,18 @@
 package net.rfrentrop.tidalremote.screens
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.DrawableRes
-import androidx.compose.Composable
-import androidx.compose.MutableState
-import androidx.compose.state
+import androidx.compose.*
 import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
+import androidx.ui.core.ContextAmbient
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.*
 import androidx.ui.graphics.Color
+import androidx.ui.graphics.asImageAsset
 import androidx.ui.input.TextFieldValue
 import androidx.ui.layout.*
 import androidx.ui.material.IconButton
@@ -21,9 +23,13 @@ import androidx.ui.res.vectorResource
 import androidx.ui.savedinstancestate.savedInstanceState
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.Screen
+import net.rfrentrop.tidalremote.ui.UiState
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -196,7 +202,7 @@ fun ArtistRow(page: MutableState<Screen>, artist: JSONObject) {
         roles.add(artist.getJSONArray("artistRoles").getJSONObject(i)["category"] as String)
 
     RowTemplate(
-            imageUrl = "",
+            imageUrl = if(!artist.isNull("picture")) artist["picture"] as String else "",
             text1 = artist["name"] as String,
             text2 = roles.joinToString(", "),
             text3 = "",
@@ -218,7 +224,7 @@ fun AlbumRow(page: MutableState<Screen>, album: JSONObject) {
         artists.add(album.getJSONArray("artists").getJSONObject(i)["name"] as String)
 
     RowTemplate(
-            imageUrl = "",
+            imageUrl = album["cover"] as String,
             text1 = album["title"] as String,
             text2 = artists.joinToString(", "),
             text3 = (album["releaseDate"] as String).substring(0, 4),
@@ -247,7 +253,7 @@ fun TrackRow(page: MutableState<Screen>, track: JSONObject) {
         flags.add("MASTER")
 
     RowTemplate(
-            imageUrl = "",
+            imageUrl = track.getJSONObject("album")["cover"] as String,
             text1 = track["title"] as String,
             text2 = artists.joinToString(", "),
             text3 = flags.joinToString(" / "),
@@ -264,7 +270,7 @@ fun TrackRow(page: MutableState<Screen>, track: JSONObject) {
 @Composable
 fun PlaylistRow(page: MutableState<Screen>, playlist: JSONObject) {
     RowTemplate(
-            imageUrl = "",
+            imageUrl = playlist["squareImage"] as String,
             text1 = playlist["title"] as String,
             text2 = if(playlist.getJSONObject("creator").has("name")) playlist.getJSONObject("creator")["name"] as String else "TIDAL",
             text3 = "${playlist["numberOfTracks"] as Int} TRACKS",
@@ -298,7 +304,7 @@ fun VideoRow(page: MutableState<Screen>, video: JSONObject) {
         durationString = "${minutes}MIN ${seconds}SEC"
 
     RowTemplate(
-            imageUrl = "",
+            imageUrl = video["imageId"] as String,
             text1 = video["title"] as String,
             text2 = artists.joinToString(", "),
             text3 = durationString,
@@ -326,12 +332,29 @@ fun RowTemplate(
             modifier = Modifier.height(70.dp) + Modifier.fillMaxWidth() + Modifier.padding(bottom=10.dp),
             verticalGravity = Alignment.CenterVertically
     ) {
-        Image(
-                // TODO: load the image from imageURL
-                modifier = Modifier.aspectRatio(1f),
-                asset = imageResource(id = R.drawable.emptycover),
-                contentScale = ContentScale.FillHeight
-        )
+        if(imageUrl.isNotEmpty()) {
+            val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), 160, 160))
+
+            if (loadPictureState is UiState.Success<Bitmap>)
+                Image(
+                        modifier = Modifier.aspectRatio(1f),
+                        asset = loadPictureState.data.asImageAsset(),
+                        contentScale = ContentScale.FillHeight
+                )
+            else
+                Image(
+                        modifier = Modifier.aspectRatio(1f),
+                        asset = imageResource(id = R.drawable.emptycover),
+                        contentScale = ContentScale.FillHeight
+                )
+        }
+        else {
+            Image(
+                    modifier = Modifier.aspectRatio(1f),
+                    asset = imageResource(id = R.drawable.emptycover),
+                    contentScale = ContentScale.FillHeight
+            )
+        }
 
         Column(
                 modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
@@ -371,4 +394,22 @@ fun RowTemplate(
 
         Spacer(modifier = Modifier.width(10.dp))
     }
+}
+
+@Composable
+fun loadPicture(url: String): UiState<Bitmap> {
+    var bitmapState: UiState<Bitmap> by state { UiState.Loading }
+
+    Glide.with(ContextAmbient.current)
+            .asBitmap()
+            .load(url)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    bitmapState = UiState.Success(resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) { }
+            })
+
+    return bitmapState
 }

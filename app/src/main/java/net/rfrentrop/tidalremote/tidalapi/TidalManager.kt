@@ -9,12 +9,12 @@ import net.rfrentrop.tidalremote.MainActivity
 import org.json.JSONObject
 
 class TidalManager (
-    val context: MainActivity
+    private val context: MainActivity
 ) {
 
     companion object{
         const val API_LOCATION = "https://api.tidalhifi.com/v1/"
-        const val IMAGE_URL = "https://resources.tidal.com/images/%s/%ix%i.jpg"
+        const val IMAGE_URL = "https://resources.tidal.com/images/%s/%dx%d.jpg"
     }
 
     lateinit var apiToken: String
