@@ -2,6 +2,7 @@ package net.rfrentrop.tidalremote.screens
 
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.DrawableRes
 import androidx.compose.Composable
 import androidx.compose.MutableState
 import androidx.compose.state
@@ -189,198 +190,144 @@ fun TopResult(page: MutableState<Screen>, top: JSONObject) {
 
 @Composable
 fun ArtistRow(page: MutableState<Screen>, artist: JSONObject) {
-    Row(
-            modifier = Modifier.height(70.dp) + Modifier.fillMaxWidth(),
-            verticalGravity = Alignment.CenterVertically
-    ) {
-        Image(
-                modifier = Modifier.aspectRatio(1f),
-                asset = imageResource(id = R.drawable.emptycover),
-                contentScale = ContentScale.FillHeight
-        )
+    // Construct the artist roles
+    val roles = ArrayList<String>()
+    for(i in 0 until (artist["artistRoles"] as JSONArray).length())
+        roles.add(artist.getJSONArray("artistRoles").getJSONObject(i)["category"] as String)
 
-        Column(
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
-        ) {
-            Text(
-                    text = artist["name"] as String,
-                    style = MaterialTheme.typography.body1,
-                    color = Color.White,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-            )
+    RowTemplate(
+            imageUrl = "",
+            text1 = artist["name"] as String,
+            text2 = roles.joinToString(", "),
+            text3 = "",
+            iconId = R.drawable.ic_more,
+            onClick = {
 
-            // Fabricate the artist roles
-            val roles = ArrayList<String>()
-            for(i in 0 until (artist["artistRoles"] as JSONArray).length())
-                roles.add(artist.getJSONArray("artistRoles").getJSONObject(i)["category"] as String)
+            },
+            onIconClick = {
 
-            Text(
-                    text = roles.joinToString(", "),
-                    style = MaterialTheme.typography.body2,
-                    color = Color.LightGray,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-            )
-        }
-
-        IconButton(onClick = {
-            TODO()
-        }) {
-            Icon(vectorResource(id = R.drawable.ic_more))
-        }
-
-        Spacer(modifier = Modifier.width(10.dp))
-    }
+            }
+    )
 }
 
-// TODO: Add album year
 @Composable
 fun AlbumRow(page: MutableState<Screen>, album: JSONObject) {
-    Row(
-            modifier = Modifier.height(70.dp) + Modifier.fillMaxWidth(),
-            verticalGravity = Alignment.CenterVertically
-    ) {
-        Image(
-                modifier = Modifier.aspectRatio(1f),
-                asset = imageResource(id = R.drawable.emptycover),
-                contentScale = ContentScale.FillHeight
-        )
+    // Construct the artist list
+    val artists = ArrayList<String>()
+    for(i in 0 until (album["artists"] as JSONArray).length())
+        artists.add(album.getJSONArray("artists").getJSONObject(i)["name"] as String)
 
-        Column(
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
-        ) {
-            Text(
-                    text = album["title"] as String,
-                    style = MaterialTheme.typography.body1,
-                    color = Color.White,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-            )
+    RowTemplate(
+            imageUrl = "",
+            text1 = album["title"] as String,
+            text2 = artists.joinToString(", "),
+            text3 = (album["releaseDate"] as String).substring(0, 4),
+            iconId = R.drawable.ic_more,
+            onClick = {
 
-            // Fabricate the artist list
-            val artists = ArrayList<String>()
-            for(i in 0 until (album["artists"] as JSONArray).length())
-                artists.add(album.getJSONArray("artists").getJSONObject(i)["name"] as String)
+            },
+            onIconClick = {
 
-            Text(
-                    text = artists.joinToString(", "),
-                    style = MaterialTheme.typography.body2,
-                    color = Color.LightGray,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-            )
-        }
-
-        IconButton(onClick = {
-            TODO()
-        }) {
-            Icon(vectorResource(id = R.drawable.ic_more))
-        }
-
-        Spacer(modifier = Modifier.width(10.dp))
-    }
+            }
+    )
 }
 
-// TODO: Add explicit/master/etc.
 @Composable
 fun TrackRow(page: MutableState<Screen>, track: JSONObject) {
-    Row(
-            modifier = Modifier.height(70.dp) + Modifier.fillMaxWidth(),
-            verticalGravity = Alignment.CenterVertically
-    ) {
-        Image(
-                modifier = Modifier.aspectRatio(1f),
-                asset = imageResource(id = R.drawable.emptycover),
-                contentScale = ContentScale.FillHeight
-        )
+    // Construct the artist list
+    val artists = ArrayList<String>()
+    for(i in 0 until (track["artists"] as JSONArray).length())
+        artists.add(track.getJSONArray("artists").getJSONObject(i)["name"] as String)
 
-        Column(
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
-        ) {
-            Text(
-                    text = track["title"] as String,
-                    style = MaterialTheme.typography.body1,
-                    color = Color.White,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-            )
+    // Construct the flags list
+    val flags = ArrayList<String>()
+    if(track["explicit"] as Boolean)
+        flags.add("EXPLICIT")
+    if(track["audioQuality"] as String == "HI_RES")
+        flags.add("MASTER")
 
-            // Fabricate the artist list
-            val artists = ArrayList<String>()
-            for(i in 0 until (track["artists"] as JSONArray).length())
-                artists.add(track.getJSONArray("artists").getJSONObject(i)["name"] as String)
+    RowTemplate(
+            imageUrl = "",
+            text1 = track["title"] as String,
+            text2 = artists.joinToString(", "),
+            text3 = flags.joinToString(" / "),
+            iconId = R.drawable.ic_more,
+            onClick = {
 
-            Text(
-                    text = artists.joinToString(", "),
-                    style = MaterialTheme.typography.body2,
-                    color = Color.LightGray,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-            )
-        }
+            },
+            onIconClick = {
 
-        IconButton(onClick = {
-            TODO()
-        }) {
-            Icon(vectorResource(id = R.drawable.ic_more))
-        }
-
-        Spacer(modifier = Modifier.width(10.dp))
-    }
+            }
+    )
 }
 
-// TODO: Add nr of tracks
 @Composable
 fun PlaylistRow(page: MutableState<Screen>, playlist: JSONObject) {
-    Row(
-            modifier = Modifier.height(70.dp) + Modifier.fillMaxWidth(),
-            verticalGravity = Alignment.CenterVertically
-    ) {
-        Image(
-                modifier = Modifier.aspectRatio(1f),
-                asset = imageResource(id = R.drawable.emptycover),
-                contentScale = ContentScale.FillHeight
-        )
+    RowTemplate(
+            imageUrl = "",
+            text1 = playlist["title"] as String,
+            text2 = if(playlist.getJSONObject("creator").has("name")) playlist.getJSONObject("creator")["name"] as String else "TIDAL",
+            text3 = "${playlist["numberOfTracks"] as Int} TRACKS",
+            iconId = R.drawable.ic_more,
+            onClick = {
 
-        Column(
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
-        ) {
-            Text(
-                    text = playlist["title"] as String,
-                    style = MaterialTheme.typography.body1,
-                    color = Color.White,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-            )
+            },
+            onIconClick = {
 
-            Text(
-                    text = if(playlist.getJSONObject("creator").has("name")) playlist.getJSONObject("creator")["name"] as String else "TIDAL",
-                    style = MaterialTheme.typography.body2,
-                    color = Color.LightGray,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-            )
-        }
-
-        IconButton(onClick = {
-            TODO()
-        }) {
-            Icon(vectorResource(id = R.drawable.ic_more))
-        }
-
-        Spacer(modifier = Modifier.width(10.dp))
-    }
+            }
+    )
 }
 
-// TODO: Add duration
 @Composable
 fun VideoRow(page: MutableState<Screen>, video: JSONObject) {
+    // Construct the artist list
+    val artists = ArrayList<String>()
+    for(i in 0 until (video["artists"] as JSONArray).length())
+        artists.add(video.getJSONArray("artists").getJSONObject(i)["name"] as String)
+
+    // Construct the duration
+    val duration = video["duration"] as Int
+    val hours = duration / 3600
+    val minutes = duration.rem(3600) / 60
+    val seconds = duration.rem(60)
+
+    var durationString = ""
+    if(hours > 0)
+        durationString = "${hours}HR ${minutes}MIN"
+    else
+        durationString = "${minutes}MIN ${seconds}SEC"
+
+    RowTemplate(
+            imageUrl = "",
+            text1 = video["title"] as String,
+            text2 = artists.joinToString(", "),
+            text3 = durationString,
+            iconId = R.drawable.ic_more,
+            onClick = {
+
+            },
+            onIconClick = {
+
+            }
+    )
+}
+
+@Composable
+fun RowTemplate(
+        imageUrl: String,
+        text1: String,
+        text2: String,
+        text3: String,
+        @DrawableRes iconId: Int,
+        onClick: () -> Unit,
+        onIconClick: () -> Unit
+) {
     Row(
-            modifier = Modifier.height(70.dp) + Modifier.fillMaxWidth(),
+            modifier = Modifier.height(70.dp) + Modifier.fillMaxWidth() + Modifier.padding(bottom=10.dp),
             verticalGravity = Alignment.CenterVertically
     ) {
         Image(
+                // TODO: load the image from imageURL
                 modifier = Modifier.aspectRatio(1f),
                 asset = imageResource(id = R.drawable.emptycover),
                 contentScale = ContentScale.FillHeight
@@ -390,31 +337,36 @@ fun VideoRow(page: MutableState<Screen>, video: JSONObject) {
                 modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
         ) {
             Text(
-                    text = video["title"] as String,
+                    text = text1,
                     style = MaterialTheme.typography.body1,
                     color = Color.White,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
             )
 
-            // Fabricate the artist list
-            val artists = ArrayList<String>()
-            for(i in 0 until (video["artists"] as JSONArray).length())
-                artists.add(video.getJSONArray("artists").getJSONObject(i)["name"] as String)
-
             Text(
-                    text = artists.joinToString(", "),
+                    text = text2,
                     style = MaterialTheme.typography.body2,
                     color = Color.LightGray,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
             )
+
+            if(text3.isNotEmpty())
+                Text(
+                        modifier = Modifier.padding(top=5.dp),
+                        text = text3,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = MaterialTheme.colors.secondary,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                )
         }
 
         IconButton(onClick = {
-            TODO()
+            onIconClick()
         }) {
-            Icon(vectorResource(id = R.drawable.ic_more))
+            Icon(vectorResource(id = iconId))
         }
 
         Spacer(modifier = Modifier.width(10.dp))
