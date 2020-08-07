@@ -166,7 +166,7 @@ fun PageVideo(item: JSONObject) {
 @Composable
 fun PageTemplate(
         imageUrl: String,
-        imageSize: IntSize = IntSize(160, 160),
+        imageSize: IntSize = IntSize(320, 320),
         rounded: Boolean = false,
         text1: String,
         text2: String,
