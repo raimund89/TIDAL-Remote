@@ -1,7 +1,6 @@
 package net.rfrentrop.tidalremote.tidalapi
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.MutableState
 import com.android.volley.Request
 import com.android.volley.toolbox.Volley
@@ -57,7 +56,6 @@ class TidalManager (
                 user.loggedIn = true
                 sessionId = response.getString("sessionId")
                 countryCode = response.getString("countryCode")
-                Log.d("TidalManager", this.toString())
             },
             errorListener = {
                 it.printStackTrace()
@@ -154,6 +152,25 @@ class TidalManager (
         val request = TidalRequest(
                 meth = Request.Method.GET,
                 url = API_LOCATION + "pages/videos",
+                headers = null,
+                params = params,
+                listener = { response ->
+                    depot.value = response
+                },
+                errorListener = {
+                    it.printStackTrace()
+                }
+        )
+
+        queue.add(request)
+    }
+
+    fun getFavorites(depot: MutableState<JSONObject>, category: String = "") {
+        val params = requestParams()
+
+        val request = TidalRequest(
+                meth = Request.Method.GET,
+                url = API_LOCATION + "users/${user.userId}/${if(category.isNotEmpty()) category else "favorites/ids"}",
                 headers = null,
                 params = params,
                 listener = { response ->
