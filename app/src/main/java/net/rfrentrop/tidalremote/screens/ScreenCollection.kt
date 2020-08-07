@@ -34,13 +34,12 @@ fun ScreenCollection(activity: MainActivity) {
     if(activity.manager.user.loggedIn)
         activity.manager.getFavorites(searchResult)
 
-    Column(
-            modifier = Modifier.padding(10.dp)
-    ) {
+    Column {
         Row {
             Text(
                     text = "Collection",
                     style = MaterialTheme.typography.h1,
+                    modifier = Modifier.padding(10.dp)
             )
             Spacer(modifier = Modifier.weight(1f, true))
             IconButton(onClick = {
@@ -65,7 +64,7 @@ fun ScreenCollection(activity: MainActivity) {
                         verticalGravity = Alignment.CenterVertically
                 ) {
                     Text(
-                            modifier = Modifier.padding(top = 10.dp, bottom = 10.dp) + Modifier.weight(1f, true),
+                            modifier = Modifier.padding(10.dp) + Modifier.weight(1f, true),
                             text = categories[it].toLowerCase().capitalize() + "s",
                             style = MaterialTheme.typography.h2
                     )
@@ -89,7 +88,7 @@ fun ScreenCollection(activity: MainActivity) {
                     activity.manager.getFavorites(detailsResult, urlPart + "s")
 
                 LazyRowItems(
-                        modifier = Modifier.padding(bottom = 20.dp) + Modifier.height(if(category.length()>0) 220.dp else 20.dp),
+                        modifier = Modifier.padding(bottom = 20.dp, start = 10.dp, end = 10.dp) + Modifier.height(if(category.length()>0) 220.dp else 20.dp),
                         items = IntRange(0, category.length()-1).toList()
                 ) { index ->
                     if(detailsResult.value.names() != null)

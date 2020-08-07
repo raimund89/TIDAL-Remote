@@ -27,12 +27,11 @@ fun ScreenHome(activity: MainActivity) {
     if(activity.manager.user.loggedIn)
         activity.manager.getHome(searchResult)
 
-    Column(
-        modifier = Modifier.padding(10.dp)
-    ) {
+    Column {
         Text(
-            text = "Home",
-            style = MaterialTheme.typography.h1,
+                text = "Home",
+                style = MaterialTheme.typography.h1,
+                modifier = Modifier.padding(10.dp)
         )
 
         if(searchResult.value.names() != null) {
@@ -49,7 +48,7 @@ fun ScreenHome(activity: MainActivity) {
                             verticalGravity = Alignment.CenterVertically
                     ) {
                         Text(
-                                modifier = Modifier.padding(top = 10.dp, bottom = 10.dp) + Modifier.weight(1f, true),
+                                modifier = Modifier.padding(10.dp) + Modifier.weight(1f, true),
                                 text = row["title"] as String,
                                 style = MaterialTheme.typography.h2
                         )

@@ -29,12 +29,11 @@ fun ScreenVideos(activity: MainActivity) {
     if(activity.manager.user.loggedIn)
         activity.manager.getVideos(searchResult)
 
-    Column(
-            modifier = Modifier.padding(10.dp)
-    ) {
+    Column {
         Text(
                 text = "Videos",
                 style = MaterialTheme.typography.h1,
+                modifier = Modifier.padding(10.dp)
         )
 
         if(searchResult.value.names() != null) {
@@ -51,7 +50,7 @@ fun ScreenVideos(activity: MainActivity) {
                             verticalGravity = Alignment.CenterVertically
                     ) {
                         Text(
-                                modifier = Modifier.padding(top = 10.dp, bottom = 10.dp) + Modifier.weight(1f, true),
+                                modifier = Modifier.padding(10.dp) + Modifier.weight(1f, true),
                                 text = row["title"] as String,
                                 style = MaterialTheme.typography.h2
                         )
@@ -64,11 +63,16 @@ fun ScreenVideos(activity: MainActivity) {
                             )
                     }
 
+                lateinit var list: JSONObject
+                lateinit var items: JSONArray
+
+                if(row.has("pagedList")) {
+                    list = row.getJSONObject("pagedList")
+                    items = list["items"] as JSONArray
+                }
+
                 when (row["type"] as String) {
                     "MIXED_TYPES_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
                         LazyRowItems(
                                 modifier = Modifier.padding(bottom = 20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length() - 1).toList()
@@ -92,55 +96,19 @@ fun ScreenVideos(activity: MainActivity) {
                         }
                     }
                     "TRACK_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
-                        for (i in 0 until items.length())
-                            RowTrack(activity, items.getJSONObject(i))
+                        ListTracks(activity, items, Orientation.VERTICAL, 5)
                     }
                     "ALBUM_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
-                        LazyRowItems(
-                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                                items = IntRange(0, items.length()-1).toList()
-                        ) {
-                            PageAlbum(activity, items.getJSONObject(it))
-                        }
+                        ListAlbums(activity, items, Orientation.HORIZONTAL)
                     }
                     "MIX_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
-                        LazyRowItems(
-                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                                items = IntRange(0, items.length()-1).toList()
-                        ) {
-                            PageMix(activity, items.getJSONObject(it))
-                        }
+                        ListMixes(activity, items, Orientation.HORIZONTAL)
                     }
                     "PLAYLIST_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
-                        LazyRowItems(
-                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                                items = IntRange(0, items.length()-1).toList()
-                        ) {
-                            PagePlaylist(activity, items.getJSONObject(it))
-                        }
+                        ListPlaylists(activity, items, Orientation.HORIZONTAL)
                     }
                     "VIDEO_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
-                        LazyRowItems(
-                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                                items = IntRange(0, items.length()-1).toList()
-                        ) {
-                            PageVideo(activity, items.getJSONObject(it))
-                        }
+                        ListVideos(activity, items, Orientation.HORIZONTAL)
                     }
                     else -> {
                         Text(row["type"] as String)
