@@ -93,7 +93,9 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
             }
         }
 
-        ScrollableColumn {
+        ScrollableColumn (
+                modifier = Modifier.padding(top=10.dp)
+        ) {
             if(searchResult.value.names() != null) {
                 // Top Result
                 Text(
@@ -329,7 +331,9 @@ fun RowTemplate(
         onIconClick: () -> Unit
 ) {
     Row(
-            modifier = Modifier.height(70.dp) + Modifier.fillMaxWidth() + Modifier.padding(bottom=10.dp),
+            modifier = Modifier.height(80.dp) + Modifier.fillMaxWidth()
+                    + Modifier.padding(bottom = 20.dp)
+                    + Modifier.clickable(onClick = {onClick()}),
             verticalGravity = Alignment.CenterVertically
     ) {
         if(imageUrl.isNotEmpty()) {
@@ -357,7 +361,7 @@ fun RowTemplate(
         }
 
         Column(
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp) + Modifier.weight(1f, true)
         ) {
             Text(
                     text = text1,
@@ -391,8 +395,6 @@ fun RowTemplate(
         }) {
             Icon(vectorResource(id = iconId))
         }
-
-        Spacer(modifier = Modifier.width(10.dp))
     }
 }
 
