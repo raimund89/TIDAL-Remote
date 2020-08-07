@@ -76,12 +76,16 @@ fun PagePlaylist(item: JSONObject, creatorLabel: String = "creators") {
     else
         creators = "by TIDAL"
 
+    val numberOf = if((item["numberOfTracks"] as Int) == 0)
+                        "${item["numberOfVideos"] as Int} VIDEOS"
+                    else
+                        "${item["numberOfTracks"] as Int} TRACKS"
 
     PageTemplate(
         imageUrl = item.getString("squareImage"),
         text1 = item["title"] as String,
         text2 = creators,
-        text3 = "${item["numberOfTracks"] as Int} TRACKS",
+        text3 = numberOf,
         onClick = {
             // TODO: Implement
         }
