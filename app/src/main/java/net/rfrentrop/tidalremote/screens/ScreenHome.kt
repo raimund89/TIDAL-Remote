@@ -15,7 +15,6 @@ import androidx.ui.material.CircularProgressIndicator
 import androidx.ui.material.MaterialTheme
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
-import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.PageAlbum
 import net.rfrentrop.tidalremote.ui.PageMix
 import net.rfrentrop.tidalremote.ui.PagePlaylist
@@ -24,12 +23,12 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 @Composable
-fun ScreenHome(activity: MainActivity, manager: TidalManager) {
+fun ScreenHome(activity: MainActivity) {
 
     val searchResult = state { JSONObject() }
 
-    if(manager.user.loggedIn)
-        manager.getHome(searchResult)
+    if(activity.manager.user.loggedIn)
+        activity.manager.getHome(searchResult)
 
     Column(
         modifier = Modifier.padding(10.dp)
@@ -79,13 +78,13 @@ fun ScreenHome(activity: MainActivity, manager: TidalManager) {
 
                             when (item["type"] as String) {
                                 "ALBUM" -> {
-                                    PageAlbum(item.getJSONObject("item"))
+                                    PageAlbum(activity, item.getJSONObject("item"))
                                 }
                                 "MIX" -> {
-                                    PageMix(item.getJSONObject("item"))
+                                    PageMix(activity, item.getJSONObject("item"))
                                 }
                                 "PLAYLIST" -> {
-                                    PagePlaylist(item.getJSONObject("item"))
+                                    PagePlaylist(activity, item.getJSONObject("item"))
                                 }
                                 else -> {
                                     Text(item["type"] as String)
@@ -108,7 +107,7 @@ fun ScreenHome(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PageAlbum(items.getJSONObject(it))
+                            PageAlbum(activity, items.getJSONObject(it))
                         }
                     }
                     "MIX_LIST" -> {
@@ -119,7 +118,7 @@ fun ScreenHome(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PageMix(items.getJSONObject(it))
+                            PageMix(activity, items.getJSONObject(it))
                         }
                     }
                     "PLAYLIST_LIST" -> {
@@ -130,7 +129,7 @@ fun ScreenHome(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PagePlaylist(items.getJSONObject(it))
+                            PagePlaylist(activity, items.getJSONObject(it))
                         }
                     }
                     else -> {

@@ -18,13 +18,14 @@ import androidx.ui.res.imageResource
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.IntSize
 import androidx.ui.unit.dp
+import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import org.json.JSONArray
 import org.json.JSONObject
 
 @Composable
-fun PageArtist(item: JSONObject) {
+fun PageArtist(activity: MainActivity, item: JSONObject) {
 
     // Construct the artist roles
     val roles = ArrayList<String>()
@@ -37,13 +38,14 @@ fun PageArtist(item: JSONObject) {
         text1 = item["name"] as String,
         text2 = roles.joinToString(", "),
         onClick = {
-
+            activity.manager.setArtist(item.getInt("id"))
+            activity.navigate(Screen.Artist)
         }
     )
 }
 
 @Composable
-fun PageAlbum(item: JSONObject) {
+fun PageAlbum(activity: MainActivity, item: JSONObject) {
 
     // Construct the artist list
     val artists = ArrayList<String>()
@@ -62,7 +64,7 @@ fun PageAlbum(item: JSONObject) {
 }
 
 @Composable
-fun PagePlaylist(item: JSONObject, creatorLabel: String = "creators") {
+fun PagePlaylist(activity: MainActivity, item: JSONObject, creatorLabel: String = "creators") {
 
     var creators = ""
     if(creatorLabel == "creators") {
@@ -93,7 +95,7 @@ fun PagePlaylist(item: JSONObject, creatorLabel: String = "creators") {
 }
 
 @Composable
-fun PageMix(item: JSONObject) {
+fun PageMix(activity: MainActivity, item: JSONObject) {
     PageTemplate(
         imageUrl = item.getJSONObject("graphic").getJSONArray("images").getJSONObject(0).getString("id"),
         rounded = true,
@@ -106,7 +108,7 @@ fun PageMix(item: JSONObject) {
 }
 
 @Composable
-fun PageTrack(item: JSONObject) {
+fun PageTrack(activity: MainActivity, item: JSONObject) {
 
     // Construct the duration
     val duration = item["duration"] as Int
@@ -132,7 +134,7 @@ fun PageTrack(item: JSONObject) {
 }
 
 @Composable
-fun PageVideo(item: JSONObject) {
+fun PageVideo(activity: MainActivity, item: JSONObject) {
 
     // Construct the artist list
     val artists = ArrayList<String>()

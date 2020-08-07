@@ -15,7 +15,6 @@ import androidx.ui.material.CircularProgressIndicator
 import androidx.ui.material.MaterialTheme
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
-import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -23,12 +22,12 @@ import org.json.JSONObject
 // TODO: MULTIPLE_TOP_PROMOTIONS not implemented. Also in Homescreen
 
 @Composable
-fun ScreenVideos(activity: MainActivity, manager: TidalManager) {
+fun ScreenVideos(activity: MainActivity) {
 
     val searchResult = state { JSONObject() }
 
-    if(manager.user.loggedIn)
-        manager.getVideos(searchResult)
+    if(activity.manager.user.loggedIn)
+        activity.manager.getVideos(searchResult)
 
     Column(
             modifier = Modifier.padding(10.dp)
@@ -78,13 +77,13 @@ fun ScreenVideos(activity: MainActivity, manager: TidalManager) {
 
                             when (item["type"] as String) {
                                 "ALBUM" -> {
-                                    PageAlbum(item.getJSONObject("item"))
+                                    PageAlbum(activity, item.getJSONObject("item"))
                                 }
                                 "MIX" -> {
-                                    PageMix(item.getJSONObject("item"))
+                                    PageMix(activity, item.getJSONObject("item"))
                                 }
                                 "PLAYLIST" -> {
-                                    PagePlaylist(item.getJSONObject("item"))
+                                    PagePlaylist(activity, item.getJSONObject("item"))
                                 }
                                 else -> {
                                     Text(item["type"] as String)
@@ -107,7 +106,7 @@ fun ScreenVideos(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PageAlbum(items.getJSONObject(it))
+                            PageAlbum(activity, items.getJSONObject(it))
                         }
                     }
                     "MIX_LIST" -> {
@@ -118,7 +117,7 @@ fun ScreenVideos(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PageMix(items.getJSONObject(it))
+                            PageMix(activity, items.getJSONObject(it))
                         }
                     }
                     "PLAYLIST_LIST" -> {
@@ -129,7 +128,7 @@ fun ScreenVideos(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PagePlaylist(items.getJSONObject(it))
+                            PagePlaylist(activity, items.getJSONObject(it))
                         }
                     }
                     "VIDEO_LIST" -> {
@@ -140,7 +139,7 @@ fun ScreenVideos(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PageVideo(items.getJSONObject(it))
+                            PageVideo(activity, items.getJSONObject(it))
                         }
                     }
                     else -> {

@@ -19,7 +19,6 @@ import androidx.ui.res.vectorResource
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
-import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.*
 import org.json.JSONObject
 
@@ -28,12 +27,12 @@ val categories = listOf("ALBUM", "ARTIST", "PLAYLIST", "TRACK", "VIDEO")
 // TODO: Missing My Mix and Recent Activity
 
 @Composable
-fun ScreenCollection(activity: MainActivity, manager: TidalManager) {
+fun ScreenCollection(activity: MainActivity) {
 
     val searchResult = state { JSONObject() }
 
-    if(manager.user.loggedIn)
-        manager.getFavorites(searchResult)
+    if(activity.manager.user.loggedIn)
+        activity.manager.getFavorites(searchResult)
 
     Column(
             modifier = Modifier.padding(10.dp)
@@ -86,8 +85,8 @@ fun ScreenCollection(activity: MainActivity, manager: TidalManager) {
                 else
                     "favorites/$urlPart"
 
-                if(manager.user.loggedIn)
-                    manager.getFavorites(detailsResult, urlPart + "s")
+                if(activity.manager.user.loggedIn)
+                    activity.manager.getFavorites(detailsResult, urlPart + "s")
 
                 LazyRowItems(
                         modifier = Modifier.padding(bottom = 20.dp) + Modifier.height(if(category.length()>0) 220.dp else 20.dp),
@@ -96,19 +95,19 @@ fun ScreenCollection(activity: MainActivity, manager: TidalManager) {
                     if(detailsResult.value.names() != null)
                         when(categories[it]) {
                             "ALBUM" -> {
-                                PageAlbum(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
+                                PageAlbum(activity, detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
                             }
                             "ARTIST" -> {
-                                PageArtist(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
+                                PageArtist(activity, detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
                             }
                             "PLAYLIST" -> {
-                                PagePlaylist(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("playlist"), "creator")
+                                PagePlaylist(activity, detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("playlist"), "creator")
                             }
                             "TRACK" -> {
-                                PageTrack(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
+                                PageTrack(activity, detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
                             }
                             "VIDEO" -> {
-                                PageVideo(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
+                                PageVideo(activity, detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
                             }
                         }
                 }

@@ -26,6 +26,13 @@ class TidalManager (
 
     private val queue = Volley.newRequestQueue(context)
 
+    var currentArtist = -1
+    var currentAlbum = ""
+    var currentPlaylist = ""
+    var currentVideo = ""
+    var currentTrack = ""
+    var currentMix = ""
+
     fun init(user: TidalUser) {
         val preferences = context.getPreferences(Context.MODE_PRIVATE)
         apiToken = preferences.getString("api_token", "") ?: ""
@@ -75,6 +82,8 @@ class TidalManager (
         val params = HashMap<String, String>()
         params["sessionId"] = sessionId
         params["countryCode"] = countryCode
+        params["deviceType"] = "BROWSER"
+        params["locale"] = "en_US"
         return params
     }
 
@@ -104,8 +113,6 @@ class TidalManager (
 
     fun getExplore(depot: MutableState<JSONObject>) {
         val params = requestParams()
-        params["deviceType"] = "PHONE"
-        params["locale"] = "en_US"
 
         val request = TidalRequest(
             meth = Request.Method.GET,
@@ -125,8 +132,6 @@ class TidalManager (
 
     fun getHome(depot: MutableState<JSONObject>) {
         val params = requestParams()
-        params["deviceType"] = "PHONE"
-        params["locale"] = "en_US"
 
         val request = TidalRequest(
             meth = Request.Method.GET,
@@ -146,8 +151,6 @@ class TidalManager (
 
     fun getVideos(depot: MutableState<JSONObject>) {
         val params = requestParams()
-        params["deviceType"] = "PHONE"
-        params["locale"] = "en_US"
 
         val request = TidalRequest(
                 meth = Request.Method.GET,
@@ -171,6 +174,30 @@ class TidalManager (
         val request = TidalRequest(
                 meth = Request.Method.GET,
                 url = API_LOCATION + "users/${user.userId}/${if(category.isNotEmpty()) category else "favorites/ids"}",
+                headers = null,
+                params = params,
+                listener = { response ->
+                    depot.value = response
+                },
+                errorListener = {
+                    it.printStackTrace()
+                }
+        )
+
+        queue.add(request)
+    }
+
+    fun setArtist(artistId: Int) {
+        currentArtist = artistId
+    }
+
+    fun getArtist(depot: MutableState<JSONObject>) {
+        val params = requestParams()
+        params["artistId"] = currentArtist.toString()
+
+        val request = TidalRequest(
+                meth = Request.Method.GET,
+                url = API_LOCATION + "pages/artist",
                 headers = null,
                 params = params,
                 listener = { response ->

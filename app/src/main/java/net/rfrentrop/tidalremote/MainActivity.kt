@@ -37,11 +37,12 @@ class MainActivity : AppCompatActivity() {
 
     private val backstack = java.util.Stack<Screen>()
     lateinit var page: MutableState<Screen>
+    lateinit var manager: TidalManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val manager = TidalManager(this)
+        manager = TidalManager(this)
         val user = TidalUser()
         manager.init(user)
         manager.login()
@@ -96,15 +97,15 @@ class MainActivity : AppCompatActivity() {
 fun MainContent(activity: MainActivity, manager: TidalManager) {
     Column(modifier = Modifier.weight(1f, true)) {
         when(activity.getScreen()) {
-            Screen.Home -> ScreenHome(activity, manager)
-            Screen.Videos -> ScreenVideos(activity, manager)
-            Screen.Search -> ScreenSearch(activity, manager)
-            Screen.Collection -> ScreenCollection(activity, manager)
+            Screen.Home -> ScreenHome(activity)
+            Screen.Videos -> ScreenVideos(activity)
+            Screen.Search -> ScreenSearch(activity)
+            Screen.Collection -> ScreenCollection(activity)
             Screen.Album -> TODO()
-            Screen.Artist -> TODO()
+            Screen.Artist -> ScreenArtist(activity)
             Screen.Playlist -> TODO()
             Screen.Track -> TODO()
-            Screen.Settings -> ScreenSettings(activity, manager)
+            Screen.Settings -> ScreenSettings(activity)
         }
     }
 }

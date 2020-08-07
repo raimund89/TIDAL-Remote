@@ -20,11 +20,10 @@ import androidx.ui.material.Surface
 import androidx.ui.savedinstancestate.savedInstanceState
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
-import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.Screen
 
 @Composable
-fun ScreenSettings(activity: MainActivity, manager: TidalManager) {
+fun ScreenSettings(activity: MainActivity) {
     ScrollableColumn(
         modifier = Modifier.padding(10.dp)
     ) {
@@ -125,7 +124,7 @@ fun ScreenSettings(activity: MainActivity, manager: TidalManager) {
                             apply()
                         }
 
-                        manager.relogin()
+                        activity.manager.relogin()
                     }
 
                     activity.navigate(Screen.Collection)

@@ -22,7 +22,6 @@ import androidx.ui.savedinstancestate.savedInstanceState
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
-import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -30,13 +29,13 @@ import org.json.JSONObject
 // TODO: Scrolling of search results is still not very smooth
 
 @Composable
-fun ScreenSearch(activity: MainActivity, manager: TidalManager) {
+fun ScreenSearch(activity: MainActivity) {
 
     val searchResult = state { JSONObject() }
     var lastSearch = 0L
     val delayedSearch = Handler(Looper.myLooper()!!)
 
-    manager.getExplore(searchResult)
+    activity.manager.getExplore(searchResult)
 
     Column(
             modifier = Modifier.padding(10.dp)
@@ -61,17 +60,17 @@ fun ScreenSearch(activity: MainActivity, manager: TidalManager) {
                             if(!it.text.isBlank()) {
                                 if(System.currentTimeMillis() - lastSearch > 1000L) {
                                     lastSearch = System.currentTimeMillis()
-                                    manager.search(it.text, searchResult)
+                                    activity.manager.search(it.text, searchResult)
                                 }
                                 else {
                                     delayedSearch.postDelayed({
                                         lastSearch = System.currentTimeMillis()
-                                        manager.search(it.text, searchResult)
+                                        activity.manager.search(it.text, searchResult)
                                     }, 1000)
                                 }
                             }
                             else
-                                manager.getExplore(searchResult)
+                                activity.manager.getExplore(searchResult)
                         },
                         textStyle = MaterialTheme.typography.h3,
                         textColor = Color.Gray,
@@ -219,7 +218,7 @@ fun ExploreResult(activity: MainActivity, row: JSONObject) {
                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                 items = IntRange(0, items.length()-1).toList()
             ) {
-                PageAlbum(items.getJSONObject(it))
+                PageAlbum(activity, items.getJSONObject(it))
             }
         }
         "ARTIST_LIST" -> {
@@ -230,7 +229,7 @@ fun ExploreResult(activity: MainActivity, row: JSONObject) {
                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                 items = IntRange(0, items.length()-1).toList()
             ) {
-                PageArtist(items.getJSONObject(it))
+                PageArtist(activity, items.getJSONObject(it))
             }
         }
         else -> {
