@@ -64,6 +64,32 @@ fun PageAlbumItem(item: JSONObject) {
 }
 
 @Composable
+fun PagePlaylistItem(item: JSONObject) {
+    PageItem(
+        imageUrl = item.getString("squareImage"),
+        text1 = item["title"] as String,
+        text2 = if(item.getJSONArray("creators").length()>0) "by " + item.getJSONArray("creators").getJSONObject(0)["name"] as String else "by TIDAL",
+        text3 = "${item["numberOfTracks"] as Int} TRACKS",
+        onClick = {
+            // TODO: Implement
+        }
+    )
+}
+
+@Composable
+fun PageMixItem(item: JSONObject) {
+    PageItem(
+        imageUrl = item.getJSONObject("graphic").getJSONArray("images").getJSONObject(0).getString("id"),
+        rounded = true,
+        text1 = item["title"] as String,
+        text2 = item["subTitle"] as String,
+        onClick = {
+
+        }
+    )
+}
+
+@Composable
 fun PageItem(
     imageUrl: String,
     rounded: Boolean = false,
@@ -73,9 +99,9 @@ fun PageItem(
     onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.width(180.dp) + Modifier.padding(end = 20.dp) + Modifier.clickable(onClick = {onClick()}),
+        modifier = Modifier.width(160.dp) + Modifier.padding(end = 20.dp) + Modifier.clickable(onClick = {onClick()}),
     ) {
-        val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), 320, 320))
+        val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), 160, 160))
 
         if (loadPictureState is UiState.Success<Bitmap>)
             Surface(

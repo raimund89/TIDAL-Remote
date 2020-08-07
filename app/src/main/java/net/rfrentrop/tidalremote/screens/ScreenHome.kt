@@ -16,6 +16,8 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.PageAlbumItem
+import net.rfrentrop.tidalremote.ui.PageMixItem
+import net.rfrentrop.tidalremote.ui.PagePlaylistItem
 import net.rfrentrop.tidalremote.ui.Screen
 import org.json.JSONArray
 import org.json.JSONObject
@@ -65,27 +67,70 @@ fun ScreenHome(page: MutableState<Screen>, manager: TidalManager) {
 
                     when (row["type"] as String) {
                         "MIXED_TYPES_LIST" -> {
+                            val list = row.getJSONObject("pagedList")
+                            val items = list["items"] as JSONArray
 
+                            LazyRowItems(
+                                modifier = Modifier.padding(bottom = 20.dp) + Modifier.height(220.dp),
+                                items = IntRange(0, items.length() - 1).toList()
+                            ) {
+                                val item = items.getJSONObject(it)
+
+                                when (item["type"] as String) {
+                                    "ALBUM" -> {
+                                        PageAlbumItem(item.getJSONObject("item"))
+                                    }
+                                    "MIX" -> {
+                                        PageMixItem(item.getJSONObject("item"))
+                                    }
+                                    "PLAYLIST" -> {
+                                        PagePlaylistItem(item.getJSONObject("item"))
+                                    }
+                                    else -> {
+                                        Text(item["type"] as String)
+                                    }
+                                }
+                            }
                         }
                         "TRACK_LIST" -> {
+                            val list = row.getJSONObject("pagedList")
+                            val items = list["items"] as JSONArray
 
+                            for (i in 0 until items.length())
+                                TrackRow(page, items.getJSONObject(i))
                         }
                         "ALBUM_LIST" -> {
                             val list = row.getJSONObject("pagedList")
                             val items = list["items"] as JSONArray
 
                             LazyRowItems(
-                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(240.dp),
+                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                             ) {
                                 PageAlbumItem(items.getJSONObject(it))
                             }
                         }
                         "MIX_LIST" -> {
+                            val list = row.getJSONObject("pagedList")
+                            val items = list["items"] as JSONArray
 
+                            LazyRowItems(
+                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
+                                items = IntRange(0, items.length()-1).toList()
+                            ) {
+                                PageMixItem(items.getJSONObject(it))
+                            }
                         }
                         "PLAYLIST_LIST" -> {
+                            val list = row.getJSONObject("pagedList")
+                            val items = list["items"] as JSONArray
 
+                            LazyRowItems(
+                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
+                                items = IntRange(0, items.length()-1).toList()
+                            ) {
+                                PagePlaylistItem(items.getJSONObject(it))
+                            }
                         }
                         else -> {
                             Text(row["type"] as String)

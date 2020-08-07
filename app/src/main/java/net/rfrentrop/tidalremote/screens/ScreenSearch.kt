@@ -190,7 +190,7 @@ fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
                 val items = list["items"] as JSONArray
 
                 LazyRowItems(
-                    modifier = Modifier.padding(bottom=20.dp) + Modifier.height(240.dp),
+                    modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                     items = IntRange(0, items.length()-1).toList()
                 ) {
                     PageAlbumItem(items.getJSONObject(it))
@@ -201,7 +201,7 @@ fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
                 val items = list["items"] as JSONArray
 
                 LazyRowItems(
-                    modifier = Modifier.padding(bottom=20.dp) + Modifier.height(240.dp),
+                    modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                     items = IntRange(0, items.length()-1).toList()
                 ) {
                     PageArtistItem(items.getJSONObject(it))
