@@ -16,9 +16,9 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
-import net.rfrentrop.tidalremote.ui.PageAlbumItem
-import net.rfrentrop.tidalremote.ui.PageMixItem
-import net.rfrentrop.tidalremote.ui.PagePlaylistItem
+import net.rfrentrop.tidalremote.ui.PageAlbum
+import net.rfrentrop.tidalremote.ui.PageMix
+import net.rfrentrop.tidalremote.ui.PagePlaylist
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -78,13 +78,13 @@ fun ScreenHome(activity: MainActivity, manager: TidalManager) {
 
                             when (item["type"] as String) {
                                 "ALBUM" -> {
-                                    PageAlbumItem(item.getJSONObject("item"))
+                                    PageAlbum(item.getJSONObject("item"))
                                 }
                                 "MIX" -> {
-                                    PageMixItem(item.getJSONObject("item"))
+                                    PageMix(item.getJSONObject("item"))
                                 }
                                 "PLAYLIST" -> {
-                                    PagePlaylistItem(item.getJSONObject("item"))
+                                    PagePlaylist(item.getJSONObject("item"))
                                 }
                                 else -> {
                                     Text(item["type"] as String)
@@ -107,7 +107,7 @@ fun ScreenHome(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PageAlbumItem(items.getJSONObject(it))
+                            PageAlbum(items.getJSONObject(it))
                         }
                     }
                     "MIX_LIST" -> {
@@ -118,7 +118,7 @@ fun ScreenHome(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PageMixItem(items.getJSONObject(it))
+                            PageMix(items.getJSONObject(it))
                         }
                     }
                     "PLAYLIST_LIST" -> {
@@ -129,7 +129,7 @@ fun ScreenHome(activity: MainActivity, manager: TidalManager) {
                                 modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length()-1).toList()
                         ) {
-                            PagePlaylistItem(items.getJSONObject(it))
+                            PagePlaylist(items.getJSONObject(it))
                         }
                     }
                     else -> {

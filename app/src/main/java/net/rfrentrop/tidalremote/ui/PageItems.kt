@@ -24,14 +24,14 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 @Composable
-fun PageArtistItem(item: JSONObject) {
+fun PageArtist(item: JSONObject) {
 
     // Construct the artist roles
     val roles = ArrayList<String>()
     for (i in 0 until (item["artistRoles"] as JSONArray).length())
         roles.add(item.getJSONArray("artistRoles").getJSONObject(i)["category"] as String)
 
-    PageItem(
+    PageTemplate(
         imageUrl = item.getString("picture"),
         rounded = true,
         text1 = item["name"] as String,
@@ -43,14 +43,14 @@ fun PageArtistItem(item: JSONObject) {
 }
 
 @Composable
-fun PageAlbumItem(item: JSONObject) {
+fun PageAlbum(item: JSONObject) {
 
     // Construct the artist list
     val artists = ArrayList<String>()
     for(i in 0 until (item["artists"] as JSONArray).length())
         artists.add(item.getJSONArray("artists").getJSONObject(i)["name"] as String)
 
-    PageItem(
+    PageTemplate(
         imageUrl = item.getString("cover"),
         text1 = item["title"] as String,
         text2 = artists.joinToString(", "),
@@ -62,7 +62,7 @@ fun PageAlbumItem(item: JSONObject) {
 }
 
 @Composable
-fun PagePlaylistItem(item: JSONObject, creatorLabel: String = "creators") {
+fun PagePlaylist(item: JSONObject, creatorLabel: String = "creators") {
 
     var creators = ""
     if(creatorLabel == "creators") {
@@ -77,7 +77,7 @@ fun PagePlaylistItem(item: JSONObject, creatorLabel: String = "creators") {
         creators = "by TIDAL"
 
 
-    PageItem(
+    PageTemplate(
         imageUrl = item.getString("squareImage"),
         text1 = item["title"] as String,
         text2 = creators,
@@ -89,8 +89,8 @@ fun PagePlaylistItem(item: JSONObject, creatorLabel: String = "creators") {
 }
 
 @Composable
-fun PageMixItem(item: JSONObject) {
-    PageItem(
+fun PageMix(item: JSONObject) {
+    PageTemplate(
         imageUrl = item.getJSONObject("graphic").getJSONArray("images").getJSONObject(0).getString("id"),
         rounded = true,
         text1 = item["title"] as String,
@@ -102,7 +102,7 @@ fun PageMixItem(item: JSONObject) {
 }
 
 @Composable
-fun PageTrackItem(item: JSONObject) {
+fun PageTrack(item: JSONObject) {
 
     // Construct the duration
     val duration = item["duration"] as Int
@@ -116,7 +116,7 @@ fun PageTrackItem(item: JSONObject) {
     else
         durationString = "${minutes}MIN ${seconds}SEC"
 
-    PageItem(
+    PageTemplate(
             imageUrl = item.getJSONObject("album").getString("cover"),
             text1 = item["title"] as String,
             text2 = item.getJSONObject("album")["title"] as String,
@@ -128,7 +128,7 @@ fun PageTrackItem(item: JSONObject) {
 }
 
 @Composable
-fun PageVideoItem(item: JSONObject) {
+fun PageVideo(item: JSONObject) {
 
     // Construct the artist list
     val artists = ArrayList<String>()
@@ -147,7 +147,7 @@ fun PageVideoItem(item: JSONObject) {
     else
         durationString = "${minutes}MIN ${seconds}SEC"
 
-    PageItem(
+    PageTemplate(
             imageUrl = item.getString("imageId"),
             imageSize = IntSize(480, 320),
             text1 = item["title"] as String,
@@ -160,7 +160,7 @@ fun PageVideoItem(item: JSONObject) {
 }
 
 @Composable
-fun PageItem(
+fun PageTemplate(
         imageUrl: String,
         imageSize: IntSize = IntSize(160, 160),
         rounded: Boolean = false,

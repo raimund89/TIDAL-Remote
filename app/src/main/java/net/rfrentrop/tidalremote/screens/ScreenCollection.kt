@@ -96,19 +96,19 @@ fun ScreenCollection(activity: MainActivity, manager: TidalManager) {
                     if(detailsResult.value.names() != null)
                         when(categories[it]) {
                             "ALBUM" -> {
-                                PageAlbumItem(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
+                                PageAlbum(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
                             }
                             "ARTIST" -> {
-                                PageArtistItem(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
+                                PageArtist(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
                             }
                             "PLAYLIST" -> {
-                                PagePlaylistItem(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("playlist"), "creator")
+                                PagePlaylist(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("playlist"), "creator")
                             }
                             "TRACK" -> {
-                                PageTrackItem(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
+                                PageTrack(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
                             }
                             "VIDEO" -> {
-                                PageVideoItem(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
+                                PageVideo(detailsResult.value.getJSONArray("items").getJSONObject(index).getJSONObject("item"))
                             }
                         }
                 }
