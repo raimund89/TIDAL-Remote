@@ -132,7 +132,7 @@ class TidalManager (
 
         val request = TidalRequest(
             meth = Request.Method.GET,
-            url = API_LOCATION + "home",
+            url = API_LOCATION + "pages/home",
             headers = null,
             params = params,
             listener = { response ->
