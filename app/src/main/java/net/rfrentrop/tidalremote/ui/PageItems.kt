@@ -62,11 +62,25 @@ fun PageAlbumItem(item: JSONObject) {
 }
 
 @Composable
-fun PagePlaylistItem(item: JSONObject) {
+fun PagePlaylistItem(item: JSONObject, creatorLabel: String = "creators") {
+
+    var creators = ""
+    if(creatorLabel == "creators") {
+        if (item.getJSONArray(creatorLabel).length() > 0)
+            creators = "by " + item.getJSONArray(creatorLabel).getJSONObject(0)["name"]
+    }
+    else if(creatorLabel == "creator") {
+        if (item.getJSONObject(creatorLabel).has("name"))
+            creators = "by " + item.getJSONObject(creatorLabel)["name"] as String
+    }
+    else
+        creators = "by TIDAL"
+
+
     PageItem(
         imageUrl = item.getString("squareImage"),
         text1 = item["title"] as String,
-        text2 = if(item.getJSONArray("creators").length()>0) "by " + item.getJSONArray("creators").getJSONObject(0)["name"] as String else "by TIDAL",
+        text2 = creators,
         text3 = "${item["numberOfTracks"] as Int} TRACKS",
         onClick = {
             // TODO: Implement
@@ -84,6 +98,32 @@ fun PageMixItem(item: JSONObject) {
         onClick = {
 
         }
+    )
+}
+
+@Composable
+fun PageTrackItem(item: JSONObject) {
+
+    // Construct the duration
+    val duration = item["duration"] as Int
+    val hours = duration / 3600
+    val minutes = duration.rem(3600) / 60
+    val seconds = duration.rem(60)
+
+    var durationString = ""
+    if(hours > 0)
+        durationString = "${hours}HR ${minutes}MIN"
+    else
+        durationString = "${minutes}MIN ${seconds}SEC"
+
+    PageItem(
+            imageUrl = item.getJSONObject("album").getString("cover"),
+            text1 = item["title"] as String,
+            text2 = item.getJSONObject("album")["title"] as String,
+            text3 = durationString,
+            onClick = {
+
+            }
     )
 }
 
