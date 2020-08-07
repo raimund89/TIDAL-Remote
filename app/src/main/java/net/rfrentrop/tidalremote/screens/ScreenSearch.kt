@@ -3,12 +3,16 @@ package net.rfrentrop.tidalremote.screens
 import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.DrawableRes
-import androidx.compose.*
+import androidx.compose.Composable
+import androidx.compose.MutableState
+import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.*
+import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
 import androidx.ui.graphics.asImageAsset
 import androidx.ui.input.TextFieldValue
@@ -93,75 +97,172 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                 modifier = Modifier.padding(top=10.dp)
         ) {
             if(searchResult.value.names() != null) {
-                // Top Result
-                Text(
-                        modifier = Modifier.padding(top=10.dp, bottom=10.dp),
-                        text = "Top result",
-                        style = MaterialTheme.typography.h2
-                )
-                TopResult(page, searchResult.value.getJSONObject("topHit"))
-
-                // Tracks
-                Text(
-                        modifier = Modifier.padding(top=10.dp, bottom=10.dp),
-                        text = "Tracks",
-                        style = MaterialTheme.typography.h2
-                )
-                for (i in 0 until searchResult.value.getJSONObject("tracks").getJSONArray("items").length()) {
-                    if (i > 2)
-                        break
-                    TrackRow(page, searchResult.value.getJSONObject("tracks").getJSONArray("items").getJSONObject(i))
-                }
-
-                // Artists
-                Text(
-                        modifier = Modifier.padding(top=10.dp, bottom=10.dp),
-                        text = "Artists",
-                        style = MaterialTheme.typography.h2
-                )
-                for (i in 0 until searchResult.value.getJSONObject("artists").getJSONArray("items").length()) {
-                    if (i > 2)
-                        break
-                    ArtistRow(page, searchResult.value.getJSONObject("artists").getJSONArray("items").getJSONObject(i))
-                }
-
-                // Albums
-                Text(
-                        modifier = Modifier.padding(top=10.dp, bottom=10.dp),
-                        text = "Albums",
-                        style = MaterialTheme.typography.h2
-                )
-                for (i in 0 until searchResult.value.getJSONObject("albums").getJSONArray("items").length()) {
-                    if (i > 2)
-                        break
-                    AlbumRow(page, searchResult.value.getJSONObject("albums").getJSONArray("items").getJSONObject(i))
-                }
-
-                // Playlists
-                Text(
-                        modifier = Modifier.padding(top=10.dp, bottom=10.dp),
-                        text = "Playlists",
-                        style = MaterialTheme.typography.h2
-                )
-                for (i in 0 until searchResult.value.getJSONObject("playlists").getJSONArray("items").length()) {
-                    if (i > 2)
-                        break
-                    PlaylistRow(page, searchResult.value.getJSONObject("playlists").getJSONArray("items").getJSONObject(i))
-                }
-
-                // Videos
-                Text(
-                        modifier = Modifier.padding(top=10.dp, bottom=10.dp),
-                        text = "Videos",
-                        style = MaterialTheme.typography.h2
-                )
-                for (i in 0 until searchResult.value.getJSONObject("videos").getJSONArray("items").length()) {
-                    if (i > 2)
-                        break
-                    VideoRow(page, searchResult.value.getJSONObject("videos").getJSONArray("items").getJSONObject(i))
-                }
+                if(searchResult.value.has("title"))
+                    ExploreResults(page, searchResult.value)
+                else
+                    SearchResults(page, searchResult.value)
             }
         }
+    }
+}
+
+@Composable
+fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
+    val rows = result["rows"] as JSONArray
+
+    for(i in 0 until rows.length()) {
+        val row = rows.getJSONObject(i).getJSONArray("modules").getJSONObject(0)
+
+        Log.d("ScreenSearch", row.toString())
+
+        if(row["type"] == "FEATURED_PROMOTIONS")
+            continue
+
+        if(row.getString("title").isNotEmpty())
+            Row(
+                    verticalGravity = Alignment.CenterVertically
+            ) {
+                Text(
+                        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp) + Modifier.weight(1f, true),
+                        text = row["title"] as String,
+                        style = MaterialTheme.typography.h2
+                )
+
+                if(!row.isNull("showMore"))
+                    Text(
+                            text = row.getJSONObject("showMore").getString("title"),
+                            style = MaterialTheme.typography.body2
+                    )
+            }
+
+        when(row["type"]){
+            "PAGE_LINKS_CLOUD" -> {
+                val list = row.getJSONObject("pagedList")
+                val items = list["items"] as JSONArray
+
+                when(row["title"]) {
+                    "Genres" -> {
+                        // TODO: Implement multiline
+                        ScrollableRow {
+                            for (k in 0 until items.length())
+                                Surface(
+                                        color = Color.DarkGray,
+                                        modifier = Modifier.padding(10.dp) +
+                                                Modifier.clickable(onClick = { TODO() }),
+                                        shape = RoundedCornerShape(10.dp)
+                                ) {
+                                    Text(
+                                            modifier = Modifier.padding(10.dp),
+                                            color = Color.White,
+                                            text = items.getJSONObject(k)["title"] as String,
+                                            style = MaterialTheme.typography.body2,
+                                            maxLines = 1
+                                    )
+                                }
+                        }
+                    }
+                    "Moods & Activities" -> {
+                        ScrollableRow {
+                            for (k in 0 until items.length())
+                                Surface(
+                                        color = Color.DarkGray,
+                                        modifier = Modifier.padding(10.dp) +
+                                                Modifier.clickable(onClick = { TODO() }),
+                                        shape = RoundedCornerShape(10.dp)
+                                ) {
+                                    Text(
+                                            modifier = Modifier.padding(10.dp),
+                                            color = Color.White,
+                                            text = items.getJSONObject(k)["title"] as String,
+                                            style = MaterialTheme.typography.body2,
+                                            maxLines = 1
+                                    )
+                                }
+                        }
+                    }
+                }
+            }
+            "PAGE_LINKS" -> {
+
+            }
+            "ALBUM_LIST" -> {
+
+            }
+            "ARTIST_LIST" -> {
+
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchResults(page: MutableState<Screen>, result: JSONObject) {
+    // Top Result
+    Text(
+            modifier = Modifier.padding(top=10.dp, bottom=10.dp),
+            text = "Top result",
+            style = MaterialTheme.typography.h2
+    )
+    TopResult(page, result.getJSONObject("topHit"))
+
+    // Tracks
+    Text(
+            modifier = Modifier.padding(top=10.dp, bottom=10.dp),
+            text = "Tracks",
+            style = MaterialTheme.typography.h2
+    )
+    for (i in 0 until result.getJSONObject("tracks").getJSONArray("items").length()) {
+        if (i > 2)
+            break
+        TrackRow(page, result.getJSONObject("tracks").getJSONArray("items").getJSONObject(i))
+    }
+
+    // Artists
+    Text(
+            modifier = Modifier.padding(top=10.dp, bottom=10.dp),
+            text = "Artists",
+            style = MaterialTheme.typography.h2
+    )
+    for (i in 0 until result.getJSONObject("artists").getJSONArray("items").length()) {
+        if (i > 2)
+            break
+        ArtistRow(page, result.getJSONObject("artists").getJSONArray("items").getJSONObject(i))
+    }
+
+    // Albums
+    Text(
+            modifier = Modifier.padding(top=10.dp, bottom=10.dp),
+            text = "Albums",
+            style = MaterialTheme.typography.h2
+    )
+    for (i in 0 until result.getJSONObject("albums").getJSONArray("items").length()) {
+        if (i > 2)
+            break
+        AlbumRow(page, result.getJSONObject("albums").getJSONArray("items").getJSONObject(i))
+    }
+
+    // Playlists
+    Text(
+            modifier = Modifier.padding(top=10.dp, bottom=10.dp),
+            text = "Playlists",
+            style = MaterialTheme.typography.h2
+    )
+    for (i in 0 until result.getJSONObject("playlists").getJSONArray("items").length()) {
+        if (i > 2)
+            break
+        PlaylistRow(page, result.getJSONObject("playlists").getJSONArray("items").getJSONObject(i))
+    }
+
+    // Videos
+    Text(
+            modifier = Modifier.padding(top=10.dp, bottom=10.dp),
+            text = "Videos",
+            style = MaterialTheme.typography.h2
+    )
+    for (i in 0 until result.getJSONObject("videos").getJSONArray("items").length()) {
+        if (i > 2)
+            break
+        VideoRow(page, result.getJSONObject("videos").getJSONArray("items").getJSONObject(i))
     }
 }
 
