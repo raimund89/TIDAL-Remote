@@ -43,7 +43,8 @@ fun RowArtist(activity: MainActivity, artist: JSONObject) {
             rounded = true,
             iconId = R.drawable.ic_more,
             onClick = {
-
+                activity.manager.setArtist(artist.getInt("id"))
+                activity.navigate(Screen.Artist)
             },
             onIconClick = {
 
