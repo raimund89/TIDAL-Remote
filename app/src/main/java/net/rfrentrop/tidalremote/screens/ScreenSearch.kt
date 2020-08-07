@@ -1,14 +1,12 @@
 package net.rfrentrop.tidalremote.screens
 
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.DrawableRes
 import androidx.compose.*
 import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
-import androidx.ui.core.ContextAmbient
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.*
 import androidx.ui.graphics.Color
@@ -23,13 +21,11 @@ import androidx.ui.res.vectorResource
 import androidx.ui.savedinstancestate.savedInstanceState
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.Screen
 import net.rfrentrop.tidalremote.ui.UiState
+import net.rfrentrop.tidalremote.ui.loadPicture
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -396,22 +392,4 @@ fun RowTemplate(
             Icon(vectorResource(id = iconId))
         }
     }
-}
-
-@Composable
-fun loadPicture(url: String): UiState<Bitmap> {
-    var bitmapState: UiState<Bitmap> by state { UiState.Loading }
-
-    Glide.with(ContextAmbient.current)
-            .asBitmap()
-            .load(url)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    bitmapState = UiState.Success(resource)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) { }
-            })
-
-    return bitmapState
 }
