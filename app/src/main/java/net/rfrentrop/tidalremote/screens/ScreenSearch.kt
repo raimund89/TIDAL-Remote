@@ -34,6 +34,8 @@ import net.rfrentrop.tidalremote.ui.*
 import org.json.JSONArray
 import org.json.JSONObject
 
+// TODO: Scrolling of search results is still not very smooth
+
 @Composable
 fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
 
