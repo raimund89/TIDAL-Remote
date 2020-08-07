@@ -186,7 +186,28 @@ fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
                 }
             }
             "PAGE_LINKS" -> {
+                val list = row.getJSONObject("pagedList")
+                val items = list["items"] as JSONArray
 
+                // TODO: Make links clickable
+                for (j in 0 until items.length()) {
+                    val item = items.getJSONObject(j)
+                    Row(
+                            modifier = Modifier.padding(top = 15.dp, bottom = 15.dp, start = 20.dp),
+                            verticalGravity = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                                asset = vectorResource(id = R.drawable.ic_starred),
+                                tint = MaterialTheme.colors.secondary
+                        )
+                        Text(
+                                modifier = Modifier.padding(start=10.dp),
+                                text = item["title"] as String,
+                                color = Color.White,
+                                style = MaterialTheme.typography.body1
+                        )
+                    }
+                }
             }
             "ALBUM_LIST" -> {
                 val list = row.getJSONObject("pagedList")
