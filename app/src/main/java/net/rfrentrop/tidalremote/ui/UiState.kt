@@ -17,6 +17,9 @@ sealed class UiState<out T> {
     data class Error(val exception: Exception): UiState<Nothing>()
 }
 
+// Square image sizes: 160, 320, 480, 640, 750, 1080
+// Wide images: 160x107, 480x320, 750x500, 1080x720
+
 @Composable
 fun loadPicture(url: String): UiState<Bitmap> {
     var bitmapState: UiState<Bitmap> by state { UiState.Loading }
