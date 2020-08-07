@@ -105,7 +105,23 @@ class TidalManager (
     }
 
     fun getExplore(depot: MutableState<JSONObject>) {
+        val params = requestParams()
+        params["deviceType"] = "PHONE"
 
+        val request = TidalRequest(
+            meth = Request.Method.GET,
+            url = API_LOCATION + "pages/explore",
+            headers = null,
+            params = params,
+            listener = { response ->
+                depot.value = response
+            },
+            errorListener = {
+                it.printStackTrace()
+            }
+        )
+
+        queue.add(request)
     }
 
     override fun toString(): String {
