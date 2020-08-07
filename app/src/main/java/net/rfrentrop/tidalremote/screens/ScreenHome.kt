@@ -6,10 +6,11 @@ import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.ScrollableColumn
-import androidx.ui.foundation.ScrollableRow
 import androidx.ui.foundation.Text
+import androidx.ui.foundation.lazy.LazyRowItems
 import androidx.ui.layout.Column
 import androidx.ui.layout.Row
+import androidx.ui.layout.height
 import androidx.ui.layout.padding
 import androidx.ui.material.MaterialTheme
 import androidx.ui.unit.dp
@@ -75,52 +76,11 @@ fun ScreenHome(page: MutableState<Screen>, manager: TidalManager) {
                             val list = row.getJSONObject("pagedList")
                             val items = list["items"] as JSONArray
 
-                            when (row["title"]) {
-                                "Suggested New Albums" -> {
-                                    ScrollableRow(
-                                        modifier = Modifier.padding(bottom = 20.dp)
-                                    ) {
-                                        for (j in 0 until items.length()) {
-                                            PageAlbumItem(items.getJSONObject(j))
-                                        }
-                                    }
-                                }
-                                "Popular Albums" -> {
-                                    ScrollableRow(
-                                        modifier = Modifier.padding(bottom = 20.dp)
-                                    ) {
-                                        for (j in 0 until items.length()) {
-                                            PageAlbumItem(items.getJSONObject(j))
-                                        }
-                                    }
-                                }
-                                "Staff Picks: Albums" -> {
-                                    ScrollableRow(
-                                        modifier = Modifier.padding(bottom = 20.dp)
-                                    ) {
-                                        for (j in 0 until items.length()) {
-                                            PageAlbumItem(items.getJSONObject(j))
-                                        }
-                                    }
-                                }
-                                "New Releases For You" -> {
-                                    ScrollableRow(
-                                        modifier = Modifier.padding(bottom = 20.dp)
-                                    ) {
-                                        for (j in 0 until items.length()) {
-                                            PageAlbumItem(items.getJSONObject(j))
-                                        }
-                                    }
-                                }
-                                else -> {
-                                    ScrollableRow(
-                                        modifier = Modifier.padding(bottom = 20.dp)
-                                    ) {
-                                        for (j in 0 until items.length()) {
-                                            PageAlbumItem(items.getJSONObject(j))
-                                        }
-                                    }
-                                }
+                            LazyRowItems(
+                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(240.dp),
+                                items = IntRange(0, items.length()-1).toList()
+                            ) {
+                                PageAlbumItem(items.getJSONObject(it))
                             }
                         }
                         "MIX_LIST" -> {

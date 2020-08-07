@@ -11,6 +11,7 @@ import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.*
+import androidx.ui.foundation.lazy.LazyRowItems
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
 import androidx.ui.graphics.RectangleShape
@@ -140,46 +141,23 @@ fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
                 val list = row.getJSONObject("pagedList")
                 val items = list["items"] as JSONArray
 
-                when(row["title"]) {
-                    // TODO: Make clickable
-                    "Genres" -> {
-                        // TODO: Implement multiline
-                        ScrollableRow {
-                            for (k in 0 until items.length())
-                                Surface(
-                                        color = Color.DarkGray,
-                                        modifier = Modifier.padding(10.dp) +
-                                                Modifier.clickable(onClick = { TODO() }),
-                                        shape = RoundedCornerShape(10.dp)
-                                ) {
-                                    Text(
-                                            modifier = Modifier.padding(10.dp),
-                                            color = Color.White,
-                                            text = items.getJSONObject(k)["title"] as String,
-                                            style = MaterialTheme.typography.body2,
-                                            maxLines = 1
-                                    )
-                                }
-                        }
-                    }
-                    "Moods & Activities" -> {
-                        ScrollableRow {
-                            for (k in 0 until items.length())
-                                Surface(
-                                        color = Color.DarkGray,
-                                        modifier = Modifier.padding(10.dp) +
-                                                Modifier.clickable(onClick = { TODO() }),
-                                        shape = RoundedCornerShape(10.dp)
-                                ) {
-                                    Text(
-                                            modifier = Modifier.padding(10.dp),
-                                            color = Color.White,
-                                            text = items.getJSONObject(k)["title"] as String,
-                                            style = MaterialTheme.typography.body2,
-                                            maxLines = 1
-                                    )
-                                }
-                        }
+                LazyRowItems(
+                    modifier = Modifier.height(70.dp),
+                    items = IntRange(0, items.length()-1).toList()
+                ) {
+                    Surface(
+                        color = Color.DarkGray,
+                        modifier = Modifier.padding(10.dp) +
+                                Modifier.clickable(onClick = { TODO() }),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(10.dp),
+                            color = Color.White,
+                            text = items.getJSONObject(it)["title"] as String,
+                            style = MaterialTheme.typography.body2,
+                            maxLines = 1
+                        )
                     }
                 }
             }
@@ -211,24 +189,22 @@ fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
                 val list = row.getJSONObject("pagedList")
                 val items = list["items"] as JSONArray
 
-                ScrollableRow(
-                        modifier = Modifier.padding(bottom=20.dp)
+                LazyRowItems(
+                    modifier = Modifier.padding(bottom=20.dp) + Modifier.height(240.dp),
+                    items = IntRange(0, items.length()-1).toList()
                 ) {
-                    for (j in 0 until items.length()) {
-                        PageAlbumItem(items.getJSONObject(j))
-                    }
+                    PageAlbumItem(items.getJSONObject(it))
                 }
             }
             "ARTIST_LIST" -> {
                 val list = row.getJSONObject("pagedList")
                 val items = list["items"] as JSONArray
 
-                ScrollableRow(
-                        modifier = Modifier.padding(bottom = 20.dp)
+                LazyRowItems(
+                    modifier = Modifier.padding(bottom=20.dp) + Modifier.height(240.dp),
+                    items = IntRange(0, items.length()-1).toList()
                 ) {
-                    for (j in 0 until items.length()) {
-                        PageArtistItem(items.getJSONObject(j))
-                    }
+                    PageArtistItem(items.getJSONObject(it))
                 }
             }
             else -> {
