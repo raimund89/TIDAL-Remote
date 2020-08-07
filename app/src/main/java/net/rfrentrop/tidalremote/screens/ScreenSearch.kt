@@ -3,7 +3,6 @@ package net.rfrentrop.tidalremote.screens
 import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.Composable
 import androidx.compose.MutableState
@@ -109,14 +108,13 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
     }
 }
 
+// TODO: Make all items clickable!
 @Composable
 fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
     val rows = result["rows"] as JSONArray
 
     for(i in 0 until rows.length()) {
         val row = rows.getJSONObject(i).getJSONArray("modules").getJSONObject(0)
-
-        Log.d("ScreenSearch", row.toString())
 
         if(row["type"] == "FEATURED_PROMOTIONS")
             continue
@@ -132,6 +130,7 @@ fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
                 )
 
                 if(!row.isNull("showMore"))
+                    // TODO: Make clickable
                     Text(
                             text = row.getJSONObject("showMore").getString("title"),
                             style = MaterialTheme.typography.body2
@@ -144,6 +143,7 @@ fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
                 val items = list["items"] as JSONArray
 
                 when(row["title"]) {
+                    // TODO: Make clickable
                     "Genres" -> {
                         // TODO: Implement multiline
                         ScrollableRow {
