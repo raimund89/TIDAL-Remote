@@ -107,10 +107,32 @@ class TidalManager (
     fun getExplore(depot: MutableState<JSONObject>) {
         val params = requestParams()
         params["deviceType"] = "PHONE"
+        params["locale"] = "en_US"
 
         val request = TidalRequest(
             meth = Request.Method.GET,
             url = API_LOCATION + "pages/explore",
+            headers = null,
+            params = params,
+            listener = { response ->
+                depot.value = response
+            },
+            errorListener = {
+                it.printStackTrace()
+            }
+        )
+
+        queue.add(request)
+    }
+
+    fun getHome(depot: MutableState<JSONObject>) {
+        val params = requestParams()
+        params["deviceType"] = "PHONE"
+        params["locale"] = "en_US"
+
+        val request = TidalRequest(
+            meth = Request.Method.GET,
+            url = API_LOCATION + "home",
             headers = null,
             params = params,
             listener = { response ->
