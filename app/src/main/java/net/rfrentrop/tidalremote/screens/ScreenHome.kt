@@ -19,6 +19,7 @@ import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.PageAlbum
 import net.rfrentrop.tidalremote.ui.PageMix
 import net.rfrentrop.tidalremote.ui.PagePlaylist
+import net.rfrentrop.tidalremote.ui.RowTrack
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -97,7 +98,7 @@ fun ScreenHome(activity: MainActivity, manager: TidalManager) {
                         val items = list["items"] as JSONArray
 
                         for (i in 0 until items.length())
-                            TrackRow(activity, items.getJSONObject(i))
+                            RowTrack(activity, items.getJSONObject(i))
                     }
                     "ALBUM_LIST" -> {
                         val list = row.getJSONObject("pagedList")
