@@ -45,8 +45,6 @@ fun ScreenHome(page: MutableState<Screen>, manager: TidalManager) {
                 for (i in 0 until rows.length()) {
                     val row = rows.getJSONObject(i).getJSONArray("modules").getJSONObject(0)
 
-                    val more = row.getJSONObject("pagedList").getInt("limit") < row.getJSONObject("pagedList").getInt("totalNumberOfItems")
-
                     if(row.getString("title").isNotEmpty())
                         Row(
                             verticalGravity = Alignment.CenterVertically
@@ -57,7 +55,7 @@ fun ScreenHome(page: MutableState<Screen>, manager: TidalManager) {
                                 style = MaterialTheme.typography.h2
                             )
 
-                            if(more)
+                            if(!row.isNull("showMore"))
                             // TODO: Make clickable
                                 Text(
                                     text = row.getJSONObject("showMore").getString("title"),
