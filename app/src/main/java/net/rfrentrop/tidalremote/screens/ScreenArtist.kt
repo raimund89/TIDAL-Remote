@@ -161,15 +161,36 @@ fun ScreenArtist(activity: MainActivity) {
                     }
                 }
                 "TRACK_LIST" -> {
+                    Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = row.getString("title"),
+                            style = MaterialTheme.typography.h2
+                    )
                     ListTracks(activity, items, Orientation.VERTICAL, 4)
                 }
                 "ALBUM_LIST" -> {
+                    Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = row.getString("title"),
+                            style = MaterialTheme.typography.h2
+                    )
                     ListAlbums(activity, items, Orientation.HORIZONTAL)
                 }
                 "MIX_LIST" -> {
+                    Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = row.getString("title"),
+                            style = MaterialTheme.typography.h2
+                    )
                     ListMixes(activity, items, Orientation.HORIZONTAL)
                 }
                 "MIXED_TYPES_LIST" -> {
+                    Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = row.getString("title"),
+                            style = MaterialTheme.typography.h2
+                    )
+
                     LazyRowItems(
                             modifier = Modifier.padding(bottom = 20.dp) + Modifier.height(220.dp),
                             items = IntRange(0, items.length() - 1).toList()
@@ -193,15 +214,35 @@ fun ScreenArtist(activity: MainActivity) {
                     }
                 }
                 "VIDEO_LIST" -> {
+                    Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = row.getString("title"),
+                            style = MaterialTheme.typography.h2
+                    )
                     ListVideos(activity, items, Orientation.HORIZONTAL)
                 }
                 "ITEM_LIST_WITH_ROLES" -> {
+                    Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = row.getString("title"),
+                            style = MaterialTheme.typography.h2
+                    )
                     Text("Credits list to be implemented!!!!!")
                 }
                 "ARTIST_LIST" -> {
+                    Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = row.getString("title"),
+                            style = MaterialTheme.typography.h2
+                    )
                     ListArtists(activity, items, Orientation.HORIZONTAL)
                 }
                 "SOCIAL" -> {
+                    Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = row.getString("title"),
+                            style = MaterialTheme.typography.h2
+                    )
                     val list = row.getJSONArray("socialProfiles")
 
                     for (k in 0 until list.length()) {
