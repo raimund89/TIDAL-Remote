@@ -15,10 +15,7 @@ import androidx.ui.material.CircularProgressIndicator
 import androidx.ui.material.MaterialTheme
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
-import net.rfrentrop.tidalremote.ui.PageAlbum
-import net.rfrentrop.tidalremote.ui.PageMix
-import net.rfrentrop.tidalremote.ui.PagePlaylist
-import net.rfrentrop.tidalremote.ui.RowTrack
+import net.rfrentrop.tidalremote.ui.*
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -65,13 +62,18 @@ fun ScreenHome(activity: MainActivity) {
                             )
                     }
 
+                lateinit var list: JSONObject
+                lateinit var items: JSONArray
+
+                if(row.has("pagedList")) {
+                    list = row.getJSONObject("pagedList")
+                    items = list["items"] as JSONArray
+                }
+
                 when (row["type"] as String) {
                     "MIXED_TYPES_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
                         LazyRowItems(
-                                modifier = Modifier.padding(bottom = 20.dp) + Modifier.height(220.dp),
+                                modifier = Modifier.padding(bottom = 20.dp, start = 10.dp, end = 10.dp) + Modifier.height(220.dp),
                                 items = IntRange(0, items.length() - 1).toList()
                         ) {
                             val item = items.getJSONObject(it)
@@ -93,44 +95,16 @@ fun ScreenHome(activity: MainActivity) {
                         }
                     }
                     "TRACK_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
-                        for (i in 0 until items.length())
-                            RowTrack(activity, items.getJSONObject(i))
+                        ListTracks(activity, items, Orientation.VERTICAL, 5)
                     }
                     "ALBUM_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
-                        LazyRowItems(
-                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                                items = IntRange(0, items.length()-1).toList()
-                        ) {
-                            PageAlbum(activity, items.getJSONObject(it))
-                        }
+                        ListAlbums(activity, items, Orientation.HORIZONTAL)
                     }
                     "MIX_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
-                        LazyRowItems(
-                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                                items = IntRange(0, items.length()-1).toList()
-                        ) {
-                            PageMix(activity, items.getJSONObject(it))
-                        }
+                        ListMixes(activity, items, Orientation.HORIZONTAL)
                     }
                     "PLAYLIST_LIST" -> {
-                        val list = row.getJSONObject("pagedList")
-                        val items = list["items"] as JSONArray
-
-                        LazyRowItems(
-                                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                                items = IntRange(0, items.length()-1).toList()
-                        ) {
-                            PagePlaylist(activity, items.getJSONObject(it))
-                        }
+                        ListPlaylists(activity, items, Orientation.HORIZONTAL)
                     }
                     else -> {
                         Text(row["type"] as String)

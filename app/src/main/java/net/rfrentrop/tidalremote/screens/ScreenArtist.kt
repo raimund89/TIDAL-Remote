@@ -54,6 +54,14 @@ fun ScreenArtist(activity: MainActivity) {
         ) {
             val row = rows.getJSONObject(it).getJSONArray("modules").getJSONObject(0)
 
+            lateinit var list: JSONObject
+            lateinit var items: JSONArray
+
+            if(row.has("pagedList")) {
+                list = row.getJSONObject("pagedList")
+                items = list["items"] as JSONArray
+            }
+
             when(row["type"]) {
                 "ARTIST_HEADER" -> {
                     val artist = row.getJSONObject("artist")
@@ -153,38 +161,15 @@ fun ScreenArtist(activity: MainActivity) {
                     }
                 }
                 "TRACK_LIST" -> {
-                    val list = row.getJSONObject("pagedList")
-                    val items = list["items"] as JSONArray
-
-                    for (i in 0 until items.length())
-                        RowTrack(activity, items.getJSONObject(i))
+                    ListTracks(activity, items, Orientation.VERTICAL, 4)
                 }
                 "ALBUM_LIST" -> {
-                    val list = row.getJSONObject("pagedList")
-                    val items = list["items"] as JSONArray
-
-                    LazyRowItems(
-                            modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                            items = IntRange(0, items.length()-1).toList()
-                    ) { index ->
-                        PageAlbum(activity, items.getJSONObject(index))
-                    }
+                    ListAlbums(activity, items, Orientation.HORIZONTAL)
                 }
                 "MIX_LIST" -> {
-                    val list = row.getJSONObject("pagedList")
-                    val items = list["items"] as JSONArray
-
-                    LazyRowItems(
-                            modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                            items = IntRange(0, items.length()-1).toList()
-                    ) { index ->
-                        PageMix(activity, items.getJSONObject(index))
-                    }
+                    ListMixes(activity, items, Orientation.HORIZONTAL)
                 }
                 "MIXED_TYPES_LIST" -> {
-                    val list = row.getJSONObject("pagedList")
-                    val items = list["items"] as JSONArray
-
                     LazyRowItems(
                             modifier = Modifier.padding(bottom = 20.dp) + Modifier.height(220.dp),
                             items = IntRange(0, items.length() - 1).toList()
@@ -208,29 +193,13 @@ fun ScreenArtist(activity: MainActivity) {
                     }
                 }
                 "VIDEO_LIST" -> {
-                    val list = row.getJSONObject("pagedList")
-                    val items = list["items"] as JSONArray
-
-                    LazyRowItems(
-                            modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                            items = IntRange(0, items.length()-1).toList()
-                    ) { index ->
-                        PageVideo(activity, items.getJSONObject(index))
-                    }
+                    ListVideos(activity, items, Orientation.HORIZONTAL)
                 }
                 "ITEM_LIST_WITH_ROLES" -> {
                     Text("Credits list to be implemented!!!!!")
                 }
                 "ARTIST_LIST" -> {
-                    val list = row.getJSONObject("pagedList")
-                    val items = list["items"] as JSONArray
-
-                    LazyRowItems(
-                            modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                            items = IntRange(0, items.length()-1).toList()
-                    ) { index ->
-                        PageArtist(activity, items.getJSONObject(index))
-                    }
+                    ListArtists(activity, items, Orientation.HORIZONTAL)
                 }
                 "SOCIAL" -> {
                     val list = row.getJSONArray("socialProfiles")

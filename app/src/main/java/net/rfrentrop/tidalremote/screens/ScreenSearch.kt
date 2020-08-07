@@ -27,6 +27,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 // TODO: Scrolling of search results is still not very smooth
+// TODO: Remember the search value!
 
 @Composable
 fun ScreenSearch(activity: MainActivity) {
@@ -161,11 +162,11 @@ fun ExploreResult(activity: MainActivity, row: JSONObject) {
                 )
         }
 
+    val list = row.getJSONObject("pagedList")
+    val items = list["items"] as JSONArray
+
     when(row["type"]){
         "PAGE_LINKS_CLOUD" -> {
-            val list = row.getJSONObject("pagedList")
-            val items = list["items"] as JSONArray
-
             LazyRowItems(
                 modifier = Modifier.height(70.dp),
                 items = IntRange(0, items.length()-1).toList()
@@ -187,9 +188,6 @@ fun ExploreResult(activity: MainActivity, row: JSONObject) {
             }
         }
         "PAGE_LINKS" -> {
-            val list = row.getJSONObject("pagedList")
-            val items = list["items"] as JSONArray
-
             // TODO: Make links clickable
             for (j in 0 until items.length()) {
                 val item = items.getJSONObject(j)
@@ -211,26 +209,10 @@ fun ExploreResult(activity: MainActivity, row: JSONObject) {
             }
         }
         "ALBUM_LIST" -> {
-            val list = row.getJSONObject("pagedList")
-            val items = list["items"] as JSONArray
-
-            LazyRowItems(
-                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                items = IntRange(0, items.length()-1).toList()
-            ) {
-                PageAlbum(activity, items.getJSONObject(it))
-            }
+            ListAlbums(activity, items, Orientation.HORIZONTAL)
         }
         "ARTIST_LIST" -> {
-            val list = row.getJSONObject("pagedList")
-            val items = list["items"] as JSONArray
-
-            LazyRowItems(
-                modifier = Modifier.padding(bottom=20.dp) + Modifier.height(220.dp),
-                items = IntRange(0, items.length()-1).toList()
-            ) {
-                PageArtist(activity, items.getJSONObject(it))
-            }
+            ListArtists(activity, items, Orientation.HORIZONTAL)
         }
         else -> {
             Text(text=row["type"] as String)
@@ -257,11 +239,7 @@ fun SearchResult(activity: MainActivity, result: JSONObject, num: Int) {
                     text = "Tracks",
                     style = MaterialTheme.typography.h2
             )
-            for (i in 0 until result.getJSONObject("tracks").getJSONArray("items").length()) {
-                if (i > 2)
-                    break
-                RowTrack(activity, result.getJSONObject("tracks").getJSONArray("items").getJSONObject(i))
-            }
+            ListTracks(activity, result.getJSONObject("tracks").getJSONArray("items"), Orientation.VERTICAL)
         }
         2 -> {
             // Artists
@@ -270,11 +248,7 @@ fun SearchResult(activity: MainActivity, result: JSONObject, num: Int) {
                     text = "Artists",
                     style = MaterialTheme.typography.h2
             )
-            for (i in 0 until result.getJSONObject("artists").getJSONArray("items").length()) {
-                if (i > 2)
-                    break
-                RowArtist(activity, result.getJSONObject("artists").getJSONArray("items").getJSONObject(i))
-            }
+            ListArtists(activity, result.getJSONObject("artists").getJSONArray("items"), Orientation.VERTICAL)
         }
         3 -> {
             // Albums
@@ -283,11 +257,7 @@ fun SearchResult(activity: MainActivity, result: JSONObject, num: Int) {
                     text = "Albums",
                     style = MaterialTheme.typography.h2
             )
-            for (i in 0 until result.getJSONObject("albums").getJSONArray("items").length()) {
-                if (i > 2)
-                    break
-                RowAlbum(activity, result.getJSONObject("albums").getJSONArray("items").getJSONObject(i))
-            }
+            ListAlbums(activity, result.getJSONObject("albums").getJSONArray("items"), Orientation.VERTICAL)
         }
         4 -> {
             // Playlists
@@ -296,11 +266,7 @@ fun SearchResult(activity: MainActivity, result: JSONObject, num: Int) {
                     text = "Playlists",
                     style = MaterialTheme.typography.h2
             )
-            for (i in 0 until result.getJSONObject("playlists").getJSONArray("items").length()) {
-                if (i > 2)
-                    break
-                RowPlaylist(activity, result.getJSONObject("playlists").getJSONArray("items").getJSONObject(i))
-            }
+            ListPlaylists(activity, result.getJSONObject("playlists").getJSONArray("items"), Orientation.VERTICAL)
         }
         5 -> {
             // Videos
@@ -309,11 +275,7 @@ fun SearchResult(activity: MainActivity, result: JSONObject, num: Int) {
                     text = "Videos",
                     style = MaterialTheme.typography.h2
             )
-            for (i in 0 until result.getJSONObject("videos").getJSONArray("items").length()) {
-                if (i > 2)
-                    break
-                RowVideo(activity, result.getJSONObject("videos").getJSONArray("items").getJSONObject(i))
-            }
+            ListVideos(activity, result.getJSONObject("videos").getJSONArray("items"), Orientation.VERTICAL)
         }
         else -> {
             Text("Not implemented!")
