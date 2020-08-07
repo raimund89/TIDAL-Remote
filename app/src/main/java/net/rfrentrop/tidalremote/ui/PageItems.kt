@@ -97,8 +97,7 @@ fun PagePlaylist(activity: MainActivity, item: JSONObject, creatorLabel: String 
 @Composable
 fun PageMix(activity: MainActivity, item: JSONObject) {
     PageTemplate(
-        imageUrl = item.getJSONObject("graphic").getJSONArray("images").getJSONObject(0).getString("id"),
-        rounded = true,
+        imageUrl = item.getJSONObject("images").getJSONObject("LARGE").getString("url"),
         text1 = item["title"] as String,
         text2 = item["subTitle"] as String,
         onClick = {
@@ -178,7 +177,10 @@ fun PageTemplate(
     Column(
         modifier = Modifier.width(160.dp) + Modifier.height(220.dp) + Modifier.padding(end = 20.dp) + Modifier.clickable(onClick = {onClick()}),
     ) {
-        val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), imageSize.width, imageSize.height))
+        val loadPictureState = if(imageUrl.startsWith("http"))
+                                    loadPicture(imageUrl)
+                                else
+                                    loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), imageSize.width, imageSize.height))
 
         if (loadPictureState is UiState.Success<Bitmap>)
             Surface(
