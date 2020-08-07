@@ -105,6 +105,7 @@ fun MainContent(activity: MainActivity, manager: TidalManager) {
             Screen.Artist -> ScreenArtist(activity)
             Screen.Playlist -> TODO()
             Screen.Track -> TODO()
+            Screen.Mix -> TODO()
             Screen.Settings -> ScreenSettings(activity)
         }
     }

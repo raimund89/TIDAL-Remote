@@ -12,5 +12,6 @@ enum class Screen {
     Artist,
     Playlist,
     Track,
+    Mix,
 }
 

@@ -211,6 +211,30 @@ class TidalManager (
         queue.add(request)
     }
 
+    fun setMix(mixId: String) {
+        currentMix = mixId
+    }
+
+    fun getMix(depot: MutableState<JSONObject>) {
+        val params = requestParams()
+        params["mixId"] = currentMix
+
+        val request = TidalRequest(
+                meth = Request.Method.GET,
+                url = API_LOCATION + "pages/mix",
+                headers = null,
+                params = params,
+                listener = { response ->
+                    depot.value = response
+                },
+                errorListener = {
+                    it.printStackTrace()
+                }
+        )
+
+        queue.add(request)
+    }
+
     override fun toString(): String {
         return "Session ID: $sessionId, Country Code: $countryCode, Username: ${user.username}"
     }
