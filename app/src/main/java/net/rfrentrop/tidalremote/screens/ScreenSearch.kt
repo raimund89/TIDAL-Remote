@@ -14,6 +14,7 @@ import androidx.ui.core.Modifier
 import androidx.ui.foundation.*
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
+import androidx.ui.graphics.RectangleShape
 import androidx.ui.graphics.asImageAsset
 import androidx.ui.input.TextFieldValue
 import androidx.ui.layout.*
@@ -307,6 +308,7 @@ fun ArtistRow(page: MutableState<Screen>, artist: JSONObject) {
             text1 = artist["name"] as String,
             text2 = roles.joinToString(", "),
             text3 = "",
+            rounded = true,
             iconId = R.drawable.ic_more,
             onClick = {
 
@@ -425,6 +427,7 @@ fun RowTemplate(
         text1: String,
         text2: String,
         text3: String,
+        rounded: Boolean = false,
         @DrawableRes iconId: Int,
         onClick: () -> Unit,
         onIconClick: () -> Unit
@@ -439,11 +442,15 @@ fun RowTemplate(
             val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), 160, 160))
 
             if (loadPictureState is UiState.Success<Bitmap>)
-                Image(
-                        modifier = Modifier.aspectRatio(1f),
-                        asset = loadPictureState.data.asImageAsset(),
-                        contentScale = ContentScale.FillHeight
-                )
+                Surface(
+                        shape = if(rounded) RoundedCornerShape(50) else RectangleShape
+                ) {
+                    Image(
+                            modifier = Modifier.aspectRatio(1f),
+                            asset = loadPictureState.data.asImageAsset(),
+                            contentScale = ContentScale.FillHeight
+                    )
+                }
             else
                 Image(
                         modifier = Modifier.aspectRatio(1f),
