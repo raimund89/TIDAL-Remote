@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.annotation.DrawableRes
 import androidx.compose.Composable
-import androidx.compose.MutableState
 import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
@@ -28,16 +27,20 @@ import androidx.ui.res.vectorResource
 import androidx.ui.savedinstancestate.savedInstanceState
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
+import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
-import net.rfrentrop.tidalremote.ui.*
+import net.rfrentrop.tidalremote.ui.PageAlbumItem
+import net.rfrentrop.tidalremote.ui.PageArtistItem
+import net.rfrentrop.tidalremote.ui.UiState
+import net.rfrentrop.tidalremote.ui.loadPicture
 import org.json.JSONArray
 import org.json.JSONObject
 
 // TODO: Scrolling of search results is still not very smooth
 
 @Composable
-fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
+fun ScreenSearch(activity: MainActivity, manager: TidalManager) {
 
     val searchResult = state { JSONObject() }
     var lastSearch = 0L
@@ -108,7 +111,7 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                         modifier = Modifier.padding(top=10.dp),
                         items = IntRange(0, rows.length()-1).toList()
                 ) {
-                    ExploreResult(page, rows.getJSONObject(it).getJSONArray("modules").getJSONObject(0))
+                    ExploreResult(activity, rows.getJSONObject(it).getJSONArray("modules").getJSONObject(0))
                 }
             }
             else {
@@ -117,7 +120,7 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
                         modifier = Modifier.padding(top=10.dp),
                         items = IntRange(0, searchResult.value.length()-1).toList()
                 ) {
-                    SearchResult(page, searchResult.value, it)
+                    SearchResult(activity, searchResult.value, it)
                 }
             }
         }
@@ -146,7 +149,7 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
 
 // TODO: Make all items clickable!
 @Composable
-fun ExploreResult(page: MutableState<Screen>, row: JSONObject) {
+fun ExploreResult(activity: MainActivity, row: JSONObject) {
 
     if(row["type"] == "FEATURED_PROMOTIONS")
         return
@@ -247,7 +250,7 @@ fun ExploreResult(page: MutableState<Screen>, row: JSONObject) {
 }
 
 @Composable
-fun SearchResult(page: MutableState<Screen>, result: JSONObject, num: Int) {
+fun SearchResult(activity: MainActivity, result: JSONObject, num: Int) {
     when(num) {
         0 -> {
             // Top Result
@@ -256,7 +259,7 @@ fun SearchResult(page: MutableState<Screen>, result: JSONObject, num: Int) {
                     text = "Top result",
                     style = MaterialTheme.typography.h2
             )
-            TopResult(page, result.getJSONObject("topHit"))
+            TopResult(activity, result.getJSONObject("topHit"))
         }
         1 -> {
             // Tracks
@@ -268,7 +271,7 @@ fun SearchResult(page: MutableState<Screen>, result: JSONObject, num: Int) {
             for (i in 0 until result.getJSONObject("tracks").getJSONArray("items").length()) {
                 if (i > 2)
                     break
-                TrackRow(page, result.getJSONObject("tracks").getJSONArray("items").getJSONObject(i))
+                TrackRow(activity, result.getJSONObject("tracks").getJSONArray("items").getJSONObject(i))
             }
         }
         2 -> {
@@ -281,7 +284,7 @@ fun SearchResult(page: MutableState<Screen>, result: JSONObject, num: Int) {
             for (i in 0 until result.getJSONObject("artists").getJSONArray("items").length()) {
                 if (i > 2)
                     break
-                ArtistRow(page, result.getJSONObject("artists").getJSONArray("items").getJSONObject(i))
+                ArtistRow(activity, result.getJSONObject("artists").getJSONArray("items").getJSONObject(i))
             }
         }
         3 -> {
@@ -294,7 +297,7 @@ fun SearchResult(page: MutableState<Screen>, result: JSONObject, num: Int) {
             for (i in 0 until result.getJSONObject("albums").getJSONArray("items").length()) {
                 if (i > 2)
                     break
-                AlbumRow(page, result.getJSONObject("albums").getJSONArray("items").getJSONObject(i))
+                AlbumRow(activity, result.getJSONObject("albums").getJSONArray("items").getJSONObject(i))
             }
         }
         4 -> {
@@ -307,7 +310,7 @@ fun SearchResult(page: MutableState<Screen>, result: JSONObject, num: Int) {
             for (i in 0 until result.getJSONObject("playlists").getJSONArray("items").length()) {
                 if (i > 2)
                     break
-                PlaylistRow(page, result.getJSONObject("playlists").getJSONArray("items").getJSONObject(i))
+                PlaylistRow(activity, result.getJSONObject("playlists").getJSONArray("items").getJSONObject(i))
             }
         }
         5 -> {
@@ -320,7 +323,7 @@ fun SearchResult(page: MutableState<Screen>, result: JSONObject, num: Int) {
             for (i in 0 until result.getJSONObject("videos").getJSONArray("items").length()) {
                 if (i > 2)
                     break
-                VideoRow(page, result.getJSONObject("videos").getJSONArray("items").getJSONObject(i))
+                VideoRow(activity, result.getJSONObject("videos").getJSONArray("items").getJSONObject(i))
             }
         }
         else -> {
@@ -330,23 +333,23 @@ fun SearchResult(page: MutableState<Screen>, result: JSONObject, num: Int) {
 }
 
 @Composable
-fun TopResult(page: MutableState<Screen>, top: JSONObject) {
+fun TopResult(activity: MainActivity, top: JSONObject) {
     top.let {
         when(top.getString("type")) {
             "ARTISTS" -> {
-                ArtistRow(page, top["value"] as JSONObject)
+                ArtistRow(activity, top["value"] as JSONObject)
             }
             "ALBUMS" -> {
-                AlbumRow(page, top["value"] as JSONObject)
+                AlbumRow(activity, top["value"] as JSONObject)
             }
             "TRACKS" -> {
-                TrackRow(page, top["value"] as JSONObject)
+                TrackRow(activity, top["value"] as JSONObject)
             }
             "PLAYLISTS" -> {
-                PlaylistRow(page, top["value"] as JSONObject)
+                PlaylistRow(activity, top["value"] as JSONObject)
             }
             "VIDEOS" -> {
-                VideoRow(page, top["value"] as JSONObject)
+                VideoRow(activity, top["value"] as JSONObject)
             }
             else -> {
                 // Apparently the type is not supported yet? Show it instead
@@ -357,7 +360,7 @@ fun TopResult(page: MutableState<Screen>, top: JSONObject) {
 }
 
 @Composable
-fun ArtistRow(page: MutableState<Screen>, artist: JSONObject) {
+fun ArtistRow(activity: MainActivity, artist: JSONObject) {
     // Construct the artist roles
     val roles = ArrayList<String>()
     for(i in 0 until (artist["artistRoles"] as JSONArray).length())
@@ -380,7 +383,7 @@ fun ArtistRow(page: MutableState<Screen>, artist: JSONObject) {
 }
 
 @Composable
-fun AlbumRow(page: MutableState<Screen>, album: JSONObject) {
+fun AlbumRow(activity: MainActivity, album: JSONObject) {
     // Construct the artist list
     val artists = ArrayList<String>()
     for(i in 0 until (album["artists"] as JSONArray).length())
@@ -402,7 +405,7 @@ fun AlbumRow(page: MutableState<Screen>, album: JSONObject) {
 }
 
 @Composable
-fun TrackRow(page: MutableState<Screen>, track: JSONObject) {
+fun TrackRow(activity: MainActivity, track: JSONObject) {
     // Construct the artist list
     val artists = ArrayList<String>()
     for(i in 0 until (track["artists"] as JSONArray).length())
@@ -431,7 +434,7 @@ fun TrackRow(page: MutableState<Screen>, track: JSONObject) {
 }
 
 @Composable
-fun PlaylistRow(page: MutableState<Screen>, playlist: JSONObject) {
+fun PlaylistRow(activity: MainActivity, playlist: JSONObject) {
     RowTemplate(
             imageUrl = playlist["squareImage"] as String,
             text1 = playlist["title"] as String,
@@ -448,7 +451,7 @@ fun PlaylistRow(page: MutableState<Screen>, playlist: JSONObject) {
 }
 
 @Composable
-fun VideoRow(page: MutableState<Screen>, video: JSONObject) {
+fun VideoRow(activity: MainActivity, video: JSONObject) {
     // Construct the artist list
     val artists = ArrayList<String>()
     for(i in 0 until (video["artists"] as JSONArray).length())

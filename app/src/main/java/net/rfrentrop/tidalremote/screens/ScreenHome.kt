@@ -1,7 +1,6 @@
 package net.rfrentrop.tidalremote.screens
 
 import androidx.compose.Composable
-import androidx.compose.MutableState
 import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
@@ -15,16 +14,16 @@ import androidx.ui.layout.*
 import androidx.ui.material.CircularProgressIndicator
 import androidx.ui.material.MaterialTheme
 import androidx.ui.unit.dp
+import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.PageAlbumItem
 import net.rfrentrop.tidalremote.ui.PageMixItem
 import net.rfrentrop.tidalremote.ui.PagePlaylistItem
-import net.rfrentrop.tidalremote.ui.Screen
 import org.json.JSONArray
 import org.json.JSONObject
 
 @Composable
-fun ScreenHome(page: MutableState<Screen>, manager: TidalManager) {
+fun ScreenHome(activity: MainActivity, manager: TidalManager) {
 
     val searchResult = state { JSONObject() }
 
@@ -98,7 +97,7 @@ fun ScreenHome(page: MutableState<Screen>, manager: TidalManager) {
                         val items = list["items"] as JSONArray
 
                         for (i in 0 until items.length())
-                            TrackRow(page, items.getJSONObject(i))
+                            TrackRow(activity, items.getJSONObject(i))
                     }
                     "ALBUM_LIST" -> {
                         val list = row.getJSONObject("pagedList")

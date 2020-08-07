@@ -1,6 +1,7 @@
 package net.rfrentrop.tidalremote
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
 import androidx.compose.MutableState
@@ -33,6 +34,10 @@ import net.rfrentrop.tidalremote.ui.Screen
 import net.rfrentrop.tidalremote.ui.TIDALRemoteTheme
 
 class MainActivity : AppCompatActivity() {
+
+    private val backstack = java.util.Stack<Screen>()
+    lateinit var page: MutableState<Screen>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
 
             // The current page
-            val page = state { Screen.Home }
+            page = state { Screen.Home }
             // If the user is updated, update the content here
             val userstate = remember { user }
 
@@ -54,35 +59,58 @@ class MainActivity : AppCompatActivity() {
 
                     Column(Modifier.fillMaxHeight()) {
 
-                        MainContent(this@MainActivity, page, manager)
-                        Player(page, userstate)
-                        AppBar(page)
+                        MainContent(this@MainActivity, manager)
+                        Player(this@MainActivity, userstate)
+                        AppBar(this@MainActivity)
                     }
                 }
             }
         }
     }
+
+    override fun onBackPressed() {
+        Log.d("MainActivity", "Back is pressed")
+        if(backstack.size > 0) {
+            page.value = backstack.pop()
+            Log.d("MainActivity", "Next on the stack: ${page.value}")
+        }
+        else {
+            super.onBackPressed()
+        }
+    }
+
+    fun navigate(screen: Screen) {
+        if(screen == Screen.Home || screen == Screen.Videos || screen == Screen.Search || screen == Screen.Collection)
+            backstack.clear()
+        else
+            backstack.push(page.value)
+        page.value = screen
+    }
+
+    fun getScreen(): Screen {
+        return page.value
+    }
 }
 
 @Composable
-fun MainContent(activity: MainActivity, page: MutableState<Screen>, manager: TidalManager) {
+fun MainContent(activity: MainActivity, manager: TidalManager) {
     Column(modifier = Modifier.weight(1f, true)) {
-        when(page.value) {
-            Screen.Home -> ScreenHome(page, manager)
-            Screen.Videos -> ScreenVideos(page, manager)
-            Screen.Search -> ScreenSearch(page, manager)
-            Screen.Collection -> ScreenCollection(page, manager)
+        when(activity.getScreen()) {
+            Screen.Home -> ScreenHome(activity, manager)
+            Screen.Videos -> ScreenVideos(activity, manager)
+            Screen.Search -> ScreenSearch(activity, manager)
+            Screen.Collection -> ScreenCollection(activity, manager)
             Screen.Album -> TODO()
             Screen.Artist -> TODO()
             Screen.Playlist -> TODO()
             Screen.Track -> TODO()
-            Screen.Settings -> ScreenSettings(activity, page, manager)
+            Screen.Settings -> ScreenSettings(activity, manager)
         }
     }
 }
 
 @Composable
-fun Player(page: MutableState<Screen>, user: TidalUser) {
+fun Player(activity: MainActivity, user: TidalUser) {
     Column {
         // TODO: This doesn't work. The state is not updated
         Divider(color = if(user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
@@ -130,26 +158,26 @@ fun Player(page: MutableState<Screen>, user: TidalUser) {
 }
 
 @Composable
-fun AppBar(page: MutableState<Screen>) {
+fun AppBar(activity: MainActivity) {
     BottomAppBar(
             elevation = 2.dp,
             backgroundColor = MaterialTheme.colors.background
     ) {
         Spacer(modifier = Modifier.weight(1f, true))
-        IconButton(onClick = { page.value = Screen.Home}) {
-            Icon(Icons.Filled.Home, tint = if (page.value == Screen.Home) MaterialTheme.colors.secondary else Color.White)
+        IconButton(onClick = { activity.navigate(Screen.Home) }) {
+            Icon(Icons.Filled.Home, tint = if (activity.getScreen() == Screen.Home) MaterialTheme.colors.secondary else Color.White)
         }
         Spacer(modifier = Modifier.weight(1f, true))
-        IconButton(onClick = { page.value = Screen.Videos}) {
-            Icon(Icons.Filled.Face, tint = if (page.value == Screen.Videos) MaterialTheme.colors.secondary else Color.White)
+        IconButton(onClick = { activity.navigate(Screen.Videos) }) {
+            Icon(Icons.Filled.Face, tint = if (activity.getScreen() == Screen.Videos) MaterialTheme.colors.secondary else Color.White)
         }
         Spacer(modifier = Modifier.weight(1f, true))
-        IconButton(onClick = { page.value = Screen.Search}) {
-            Icon(Icons.Filled.Search, tint = if (page.value == Screen.Search) MaterialTheme.colors.secondary else Color.White)
+        IconButton(onClick = { activity.navigate(Screen.Search) }) {
+            Icon(Icons.Filled.Search, tint = if (activity.getScreen() == Screen.Search) MaterialTheme.colors.secondary else Color.White)
         }
         Spacer(modifier = Modifier.weight(1f, true))
-        IconButton(onClick = { page.value = Screen.Collection}) {
-            Icon(Icons.Filled.Favorite, tint = if (page.value == Screen.Collection) MaterialTheme.colors.secondary else Color.White)
+        IconButton(onClick = { activity.navigate(Screen.Collection) }) {
+            Icon(Icons.Filled.Favorite, tint = if (activity.getScreen() == Screen.Collection) MaterialTheme.colors.secondary else Color.White)
         }
         Spacer(modifier = Modifier.weight(1f, true))
     }

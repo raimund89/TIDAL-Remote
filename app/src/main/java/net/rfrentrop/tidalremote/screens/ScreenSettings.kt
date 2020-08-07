@@ -2,7 +2,6 @@ package net.rfrentrop.tidalremote.screens
 
 import android.content.Context
 import androidx.compose.Composable
-import androidx.compose.MutableState
 import androidx.compose.getValue
 import androidx.compose.setValue
 import androidx.ui.core.Modifier
@@ -25,7 +24,7 @@ import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.Screen
 
 @Composable
-fun ScreenSettings(activity: MainActivity, page: MutableState<Screen>, manager: TidalManager) {
+fun ScreenSettings(activity: MainActivity, manager: TidalManager) {
     ScrollableColumn(
         modifier = Modifier.padding(10.dp)
     ) {
@@ -129,7 +128,7 @@ fun ScreenSettings(activity: MainActivity, page: MutableState<Screen>, manager: 
                         manager.relogin()
                     }
 
-                    page.value = Screen.Collection
+                    activity.navigate(Screen.Collection)
                 }
             ) {
                 Text(

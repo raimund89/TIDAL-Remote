@@ -1,7 +1,6 @@
 package net.rfrentrop.tidalremote.screens
 
 import androidx.compose.Composable
-import androidx.compose.MutableState
 import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
@@ -18,6 +17,7 @@ import androidx.ui.material.IconButton
 import androidx.ui.material.MaterialTheme
 import androidx.ui.res.vectorResource
 import androidx.ui.unit.dp
+import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.ui.*
@@ -28,7 +28,7 @@ val categories = listOf("ALBUM", "ARTIST", "PLAYLIST", "TRACK", "VIDEO")
 // TODO: Missing My Mix and Recent Activity
 
 @Composable
-fun ScreenCollection(page: MutableState<Screen>, manager: TidalManager) {
+fun ScreenCollection(activity: MainActivity, manager: TidalManager) {
 
     val searchResult = state { JSONObject() }
 
@@ -45,7 +45,7 @@ fun ScreenCollection(page: MutableState<Screen>, manager: TidalManager) {
             )
             Spacer(modifier = Modifier.weight(1f, true))
             IconButton(onClick = {
-                page.value = Screen.Settings
+                activity.navigate(Screen.Settings)
             }) {
                 Icon(vectorResource(id = R.drawable.ic_settings))
             }
