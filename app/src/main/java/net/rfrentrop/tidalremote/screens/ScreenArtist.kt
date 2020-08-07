@@ -192,7 +192,7 @@ fun ScreenArtist(activity: MainActivity) {
                     )
 
                     LazyRowItems(
-                            modifier = Modifier.padding(bottom = 20.dp) + Modifier.height(220.dp),
+                            modifier = Modifier.padding(bottom = 20.dp, start = 10.dp, end = 10.dp) + Modifier.height(220.dp),
                             items = IntRange(0, items.length() - 1).toList()
                     ) { index ->
                         val item = items.getJSONObject(index)
@@ -247,7 +247,11 @@ fun ScreenArtist(activity: MainActivity) {
 
                     for (k in 0 until list.length()) {
                         Row {
-                            Text(text = list.getJSONObject(k).getString("url"))
+                            Text(
+                                    modifier = Modifier.padding(10.dp),
+                                    text = list.getJSONObject(k).getString("url"),
+                                    style = MaterialTheme.typography.body1
+                            )
                         }
                     }
                 }
