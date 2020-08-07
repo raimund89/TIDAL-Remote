@@ -40,6 +40,8 @@ fun ScreenSearch(page: MutableState<Screen>, manager: TidalManager) {
     var lastSearch = 0L
     val delayedSearch = Handler(Looper.myLooper()!!)
 
+    manager.getExplore(searchResult)
+
     Column(
             modifier = Modifier.padding(10.dp)
     ) {
