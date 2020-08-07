@@ -11,14 +11,12 @@ import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
 import androidx.ui.graphics.RectangleShape
 import androidx.ui.graphics.asImageAsset
-import androidx.ui.layout.Column
-import androidx.ui.layout.aspectRatio
-import androidx.ui.layout.padding
-import androidx.ui.layout.width
+import androidx.ui.layout.*
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Surface
 import androidx.ui.res.imageResource
 import androidx.ui.text.style.TextOverflow
+import androidx.ui.unit.IntSize
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
@@ -90,18 +88,51 @@ fun PageMixItem(item: JSONObject) {
 }
 
 @Composable
+fun PageVideoItem(item: JSONObject) {
+
+    // Construct the artist list
+    val artists = ArrayList<String>()
+    for(i in 0 until (item["artists"] as JSONArray).length())
+        artists.add(item.getJSONArray("artists").getJSONObject(i)["name"] as String)
+
+    // Construct the duration
+    val duration = item["duration"] as Int
+    val hours = duration / 3600
+    val minutes = duration.rem(3600) / 60
+    val seconds = duration.rem(60)
+
+    var durationString = ""
+    if(hours > 0)
+        durationString = "${hours}HR ${minutes}MIN"
+    else
+        durationString = "${minutes}MIN ${seconds}SEC"
+
+    PageItem(
+            imageUrl = item.getString("imageId"),
+            imageSize = IntSize(480, 320),
+            text1 = item["title"] as String,
+            text2 = artists.joinToString(", "),
+            text3 = durationString,
+            onClick = {
+
+            }
+    )
+}
+
+@Composable
 fun PageItem(
-    imageUrl: String,
-    rounded: Boolean = false,
-    text1: String,
-    text2: String,
-    text3: String = "",
-    onClick: () -> Unit
+        imageUrl: String,
+        imageSize: IntSize = IntSize(160, 160),
+        rounded: Boolean = false,
+        text1: String,
+        text2: String,
+        text3: String = "",
+        onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.width(160.dp) + Modifier.padding(end = 20.dp) + Modifier.clickable(onClick = {onClick()}),
+        modifier = Modifier.width(160.dp) + Modifier.height(220.dp) + Modifier.padding(end = 20.dp) + Modifier.clickable(onClick = {onClick()}),
     ) {
-        val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), 160, 160))
+        val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), imageSize.width, imageSize.height))
 
         if (loadPictureState is UiState.Success<Bitmap>)
             Surface(
