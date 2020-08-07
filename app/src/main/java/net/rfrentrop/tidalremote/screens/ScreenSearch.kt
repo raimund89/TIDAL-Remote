@@ -326,6 +326,9 @@ fun ExploreResults(page: MutableState<Screen>, result: JSONObject) {
                     }
                 }
             }
+            else -> {
+                Text(text=row["type"] as String)
+            }
         }
     }
 }
