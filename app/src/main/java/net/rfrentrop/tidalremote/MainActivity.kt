@@ -39,6 +39,11 @@ import net.rfrentrop.tidalremote.ui.TIDALRemoteTheme
 class MainActivity : AppCompatActivity() {
 
     private val backstack = java.util.Stack<Screen>()
+    var manager = TidalManager(this)
+
+    var discoveryActive = false
+    lateinit var nsdManager: NsdManager
+
     lateinit var page: MutableState<Screen>
     lateinit var manager: TidalManager
     lateinit var playerManager: PlayerManager
@@ -48,7 +53,6 @@ class MainActivity : AppCompatActivity() {
 
         playerManager = PlayerManager(this)
 
-        manager = TidalManager(this)
         val user = TidalUser()
         manager.init(user)
         manager.login()
