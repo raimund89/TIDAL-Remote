@@ -27,20 +27,26 @@ import androidx.ui.res.imageResource
 import androidx.ui.res.vectorResource
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
+import net.rfrentrop.tidalremote.player.PlayerManager
 import net.rfrentrop.tidalremote.screens.*
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.TidalUser
 import net.rfrentrop.tidalremote.ui.Screen
 import net.rfrentrop.tidalremote.ui.TIDALRemoteTheme
 
+// TODO: add TidalManager to the onPause and onResume functions??
+
 class MainActivity : AppCompatActivity() {
 
     private val backstack = java.util.Stack<Screen>()
     lateinit var page: MutableState<Screen>
     lateinit var manager: TidalManager
+    lateinit var players: PlayerManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        players = PlayerManager(this)
 
         manager = TidalManager(this)
         val user = TidalUser()
@@ -90,6 +96,18 @@ class MainActivity : AppCompatActivity() {
 
     fun getScreen(): Screen {
         return page.value
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        players.startDiscovery()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        players.stopDiscovery()
     }
 }
 
