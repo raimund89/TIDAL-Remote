@@ -41,12 +41,12 @@ class MainActivity : AppCompatActivity() {
     private val backstack = java.util.Stack<Screen>()
     lateinit var page: MutableState<Screen>
     lateinit var manager: TidalManager
-    lateinit var players: PlayerManager
+    lateinit var playerManager: PlayerManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        players = PlayerManager(this)
+        playerManager = PlayerManager(this)
 
         manager = TidalManager(this)
         val user = TidalUser()
@@ -66,8 +66,8 @@ class MainActivity : AppCompatActivity() {
 
                     Column(Modifier.fillMaxHeight()) {
 
-                        MainContent(this@MainActivity, manager)
-                        Player(this@MainActivity, userstate)
+                        MainContent(this@MainActivity)
+                        Player(this@MainActivity)
                         AppBar(this@MainActivity)
                     }
                 }
@@ -101,18 +101,18 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        players.startDiscovery()
+        playerManager.startDiscovery()
     }
 
     override fun onPause() {
         super.onPause()
 
-        players.stopDiscovery()
+        playerManager.stopDiscovery()
     }
 }
 
 @Composable
-fun MainContent(activity: MainActivity, manager: TidalManager) {
+fun MainContent(activity: MainActivity) {
     Column(modifier = Modifier.weight(1f, true)) {
         when(activity.getScreen()) {
             Screen.Home -> ScreenHome(activity)
@@ -130,10 +130,10 @@ fun MainContent(activity: MainActivity, manager: TidalManager) {
 }
 
 @Composable
-fun Player(activity: MainActivity, user: TidalUser) {
+fun Player(activity: MainActivity) {
     Column {
         // TODO: This doesn't work. The state is not updated
-        Divider(color = if(user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
+        Divider(color = if(activity.manager.user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
         Row(
             modifier = Modifier.height(70.dp),
             verticalGravity = Alignment.CenterVertically
