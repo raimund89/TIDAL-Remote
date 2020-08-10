@@ -4,7 +4,7 @@ The official TIDAL app for Android only supports playing music to the Android de
 This Android app, together with the TIDAL-Streamer application, provides functionality to play TIDAL music and videos on any media center that can run Python 3. Browsing and player control are handled by TIDAL-Remote, while the queue, playback and functions like shuffle and automatic playback are handled by TIDAL-Player.
 
 # Current status
-The application is still very much in development. The basic backbone is in place: API calls to the TIDAL APIs, a Websocket connecting to the TIDAL-Player and a UI that allows searching and exploring the TIDAL database.
+The application is still very much in development. The basic backbone is in place: calls to the TIDAL API endpoints, a Websocket connecting to the TIDAL-Player and a UI that allows searching and exploring the TIDAL database.
 
 # Todo
 - [x] Main user interface
