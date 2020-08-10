@@ -6,7 +6,6 @@ import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
 import androidx.compose.mutableStateMapOf
@@ -86,10 +85,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        Log.d("MainActivity", "Back is pressed")
         if(backstack.size > 0) {
             page.value = backstack.pop()
-            Log.d("MainActivity", "Next on the stack: ${page.value}")
         }
         else {
             super.onBackPressed()
@@ -110,8 +107,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        Log.d("MainActivity", "Resuming")
 
         Handler(Looper.myLooper()!!).postDelayed({
             nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
@@ -195,11 +190,6 @@ fun MainContent(activity: MainActivity) {
 
 @Composable
 fun Player(activity: MainActivity) {
-    Log.d("Player", "Redrawing")
-    activity.players.forEach { s, playerHost ->
-        Log.d("Player", "Name: $s")
-    }
-
     Column {
         // TODO: This doesn't work. The state is not updated
         Divider(color = if(activity.manager.user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
