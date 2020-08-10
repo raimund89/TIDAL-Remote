@@ -11,7 +11,7 @@ This project is not meant to undermine or degrade the TIDAL services in any way.
 
 Use of TIDAL-Remote requires logging in with a username and password (anonymous browsing is NOT supported), and users needs to obtain an API token by themselves. If you have no TIDAL account, please do NOT use this app. (As far as I can test, using the app without an account should be impossible) The app avoids an excessive number of API calls (currently it does way less calls than the official web interface or TIDAL desktop app) and images are cached using Glide. TIDAL-Remote is not able to play tracks on the device itself, but connects to TIDAL-Player via websocket to play tracks using MPD.
 
-Lastly, note that I have reached out to TIDAL to ask if using their APIs is in any way violating their terms and conditions, but apart from the response "Unfortunately, we do not share API" (exact answer) I have received no answer on a follow-up question specifically asking if reverse engineering the API calls is ok.
+Lastly, note that I have reached out to TIDAL to ask if using their APIs is in any way violating their terms and conditions, but apart from the response "Unfortunately, we do not share API. I apologize for any inconvenience this may cause." (exact answer) I have received no answer on a follow-up question specifically asking if reverse engineering the API calls is ok.
 
 # Todo
 - [x] Main user interface
