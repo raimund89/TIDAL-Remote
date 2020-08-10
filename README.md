@@ -11,11 +11,15 @@ The application is still very much in development. The basic backbone is in plac
 - [x] Implementation for API calls
 - [ ] Implementation for Websockets
 - [ ] Secure saving of login credentials
-- [ ] Search results
+- [x] Search results
 - [ ] Player backend
-- [ ] Home results
-- [ ] My Collection results
-- [ ] Album, playlist, artist screens
+- [x] Home results
+- [x] My Collection results
+- [ ] Album, playlist, artist, mix screens
 - [ ] Current track info
+- [ ] Bottom sheets with options
+- [ ] General implementation of TIDAL 'pages'
 - [ ] Notification of currently playing
-- [ ] Support for more than one player (only 1 at a time can be playing!)
+- [ ] Support for more than one player (only 1 at a time can be playing!) using zeroconf/mdns
+- [ ] Taking the queue with you when switching players
+- [ ] Sharing the player with multiple TIDAL-Remotes (all logged in!)
