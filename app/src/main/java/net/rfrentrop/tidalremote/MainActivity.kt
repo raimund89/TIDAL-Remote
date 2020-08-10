@@ -1,5 +1,8 @@
 package net.rfrentrop.tidalremote
 
+import android.content.Context
+import android.net.nsd.NsdManager
+import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +30,7 @@ import androidx.ui.res.imageResource
 import androidx.ui.res.vectorResource
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
-import net.rfrentrop.tidalremote.player.PlayerManager
+import net.rfrentrop.tidalremote.player.PlayerHost
 import net.rfrentrop.tidalremote.screens.*
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.TidalUser
@@ -37,6 +40,10 @@ import net.rfrentrop.tidalremote.ui.TIDALRemoteTheme
 // TODO: add TidalManager to the onPause and onResume functions??
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val SERVICE_TYPE = "_tidalplayer._tcp."
+    }
 
     private val backstack = java.util.Stack<Screen>()
     var manager = TidalManager(this)
@@ -50,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        playerManager = PlayerManager(this)
+        nsdManager = getSystemService(Context.NSD_SERVICE) as NsdManager
 
         val user = TidalUser()
         manager.init(user)
@@ -102,13 +109,65 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        playerManager.startDiscovery()
+        Log.d("MainActivity", "Resuming")
+
+        nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
     }
 
     override fun onPause() {
         super.onPause()
 
-        playerManager.stopDiscovery()
+        if(discoveryActive)
+            nsdManager.stopServiceDiscovery(discoveryListener)
+        discoveryActive = false
+    }
+
+    private val discoveryListener = object : NsdManager.DiscoveryListener {
+
+        // Called as soon as service discovery begins.
+        override fun onDiscoveryStarted(regType: String) {
+            discoveryActive = true
+        }
+
+        override fun onServiceFound(service: NsdServiceInfo) {
+            if(service.serviceType == SERVICE_TYPE)
+                nsdManager.resolveService(service, resolveListener)
+        }
+
+        override fun onServiceLost(service: NsdServiceInfo) {
+            if(players.containsKey(service.serviceName)) {
+                players.remove(service.serviceName)
+            }
+        }
+
+        override fun onDiscoveryStopped(serviceType: String) {
+        }
+
+        override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
+            if(discoveryActive)
+                nsdManager.stopServiceDiscovery(this)
+            discoveryActive = false
+        }
+
+        override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
+            if(discoveryActive)
+                nsdManager.stopServiceDiscovery(this)
+            discoveryActive = false
+        }
+    }
+
+    private val resolveListener = object : NsdManager.ResolveListener {
+
+        override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
+        }
+
+        override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+            // If the player already exists, update it. If not, insert it.
+            players[serviceInfo.serviceName] = PlayerHost(serviceInfo.host,
+                serviceInfo.port,
+                serviceInfo.attributes["name"]!!.decodeToString(),
+                serviceInfo.attributes["version"]!!.decodeToString())
+        }
     }
 }
 
@@ -132,6 +191,11 @@ fun MainContent(activity: MainActivity) {
 
 @Composable
 fun Player(activity: MainActivity) {
+    Log.d("Player", "Redrawing")
+    activity.players.forEach { s, playerHost ->
+        Log.d("Player", "Name: $s")
+    }
+
     Column {
         // TODO: This doesn't work. The state is not updated
         Divider(color = if(activity.manager.user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
