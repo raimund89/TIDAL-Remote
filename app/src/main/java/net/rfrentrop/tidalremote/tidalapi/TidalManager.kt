@@ -3,6 +3,7 @@ package net.rfrentrop.tidalremote.tidalapi
 import android.content.Context
 import androidx.compose.MutableState
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import net.rfrentrop.tidalremote.MainActivity
 import org.json.JSONObject
@@ -24,7 +25,7 @@ class TidalManager (
     var countryCode = ""
     lateinit var user: TidalUser
 
-    private val queue = Volley.newRequestQueue(context)
+    private lateinit var queue: RequestQueue
 
     var currentArtist = -1
     var currentAlbum = ""
@@ -34,6 +35,7 @@ class TidalManager (
     var currentMix = ""
 
     fun init(user: TidalUser) {
+        queue = Volley.newRequestQueue(context)
         val preferences = context.getPreferences(Context.MODE_PRIVATE)
         apiToken = preferences.getString("api_token", "") ?: ""
         username = preferences.getString("username", "") ?: ""
