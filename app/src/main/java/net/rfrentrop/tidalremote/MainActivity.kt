@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
-import androidx.compose.MutableState
+import androidx.compose.mutableStateMapOf
+import androidx.compose.mutableStateOf
 import androidx.compose.remember
-import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
 import androidx.ui.core.Modifier
@@ -44,9 +44,8 @@ class MainActivity : AppCompatActivity() {
     var discoveryActive = false
     lateinit var nsdManager: NsdManager
 
-    lateinit var page: MutableState<Screen>
-    lateinit var manager: TidalManager
-    lateinit var playerManager: PlayerManager
+    var page = mutableStateOf(Screen.Home)
+    var players = mutableStateMapOf<String, PlayerHost>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +58,6 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
 
-            // The current page
-            page = state { Screen.Home }
             // If the user is updated, update the content here
             val userstate = remember { user }
 
