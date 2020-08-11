@@ -32,11 +32,12 @@ import androidx.ui.res.vectorResource
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.player.PlayerHost
+import net.rfrentrop.tidalremote.player.PlayerManager
 import net.rfrentrop.tidalremote.screens.*
+import net.rfrentrop.tidalremote.theme.TIDALRemoteTheme
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.TidalUser
 import net.rfrentrop.tidalremote.ui.Screen
-import net.rfrentrop.tidalremote.ui.TIDALRemoteTheme
 
 // TODO: add TidalManager to the onPause and onResume functions??
 
@@ -46,14 +47,18 @@ class MainActivity : AppCompatActivity() {
         const val SERVICE_TYPE = "_tidalplayer._tcp."
     }
 
+    // Backend control variables: the navigation backstack, and managers for the
+    // connection with Tidal and the current player (if any)
     private val backstack = java.util.Stack<Screen>()
     var manager = TidalManager(this)
+    val player = PlayerManager(this)
 
-    var discoveryActive = false
+    // The network service discovery manager
     lateinit var nsdManager: NsdManager
 
-    var page = mutableStateOf(Screen.Home)
-    var players = mutableStateMapOf<String, PlayerHost>()
+    // States that should trigger a UI update
+    var currentPage = mutableStateOf(Screen.Home)
+    var playerList = mutableStateMapOf<String, PlayerHost>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if(backstack.size > 0) {
-            page.value = backstack.pop()
+            currentPage.value = backstack.pop()
         }
         else {
             super.onBackPressed()
@@ -97,12 +102,12 @@ class MainActivity : AppCompatActivity() {
         if(screen == Screen.Home || screen == Screen.Videos || screen == Screen.Search || screen == Screen.Collection)
             backstack.clear()
         else
-            backstack.push(page.value)
-        page.value = screen
+            backstack.push(currentPage.value)
+        currentPage.value = screen
     }
 
     fun getScreen(): Screen {
-        return page.value
+        return currentPage.value
     }
 
     override fun onResume() {
@@ -116,16 +121,13 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
 
-        if(discoveryActive)
-            nsdManager.stopServiceDiscovery(discoveryListener)
-        discoveryActive = false
+        nsdManager.stopServiceDiscovery(discoveryListener)
     }
 
     private val discoveryListener = object : NsdManager.DiscoveryListener {
 
         // Called as soon as service discovery begins.
         override fun onDiscoveryStarted(regType: String) {
-            discoveryActive = true
         }
 
         override fun onServiceFound(service: NsdServiceInfo) {
@@ -134,8 +136,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onServiceLost(service: NsdServiceInfo) {
-            if(players.containsKey(service.serviceName)) {
-                players.remove(service.serviceName)
+            if(playerList.containsKey(service.serviceName)) {
+                playerList.remove(service.serviceName)
             }
         }
 
@@ -143,15 +145,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
-            if(discoveryActive)
-                nsdManager.stopServiceDiscovery(this)
-            discoveryActive = false
+            nsdManager.stopServiceDiscovery(this)
         }
 
         override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
-            if(discoveryActive)
-                nsdManager.stopServiceDiscovery(this)
-            discoveryActive = false
+            nsdManager.stopServiceDiscovery(this)
         }
     }
 
@@ -162,7 +160,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
             // If the player already exists, update it. If not, insert it.
-            players[serviceInfo.serviceName] = PlayerHost(serviceInfo.host,
+            playerList[serviceInfo.serviceName] = PlayerHost(serviceInfo.host,
                 serviceInfo.port,
                 serviceInfo.attributes["name"]!!.decodeToString(),
                 serviceInfo.attributes["version"]!!.decodeToString())
