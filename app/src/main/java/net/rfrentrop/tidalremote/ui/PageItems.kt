@@ -21,6 +21,7 @@ import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
+import net.rfrentrop.tidalremote.tidalapi.loadPicture
 import org.json.JSONArray
 import org.json.JSONObject
 

@@ -25,6 +25,7 @@ import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
+import net.rfrentrop.tidalremote.tidalapi.loadPicture
 import net.rfrentrop.tidalremote.ui.*
 import org.json.JSONArray
 import org.json.JSONObject

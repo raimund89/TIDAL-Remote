@@ -1,4 +1,4 @@
-package net.rfrentrop.tidalremote.ui
+package net.rfrentrop.tidalremote.theme
 
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.material.Shapes

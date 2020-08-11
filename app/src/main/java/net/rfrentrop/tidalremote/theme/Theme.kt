@@ -1,4 +1,4 @@
-package net.rfrentrop.tidalremote.ui
+package net.rfrentrop.tidalremote.theme
 
 import androidx.compose.Composable
 import androidx.ui.foundation.isSystemInDarkTheme
