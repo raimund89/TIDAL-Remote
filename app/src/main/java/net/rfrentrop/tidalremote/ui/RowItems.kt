@@ -21,6 +21,7 @@ import androidx.ui.material.Surface
 import androidx.ui.res.imageResource
 import androidx.ui.res.vectorResource
 import androidx.ui.text.style.TextOverflow
+import androidx.ui.unit.IntSize
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
@@ -157,15 +158,16 @@ fun RowVideo(activity: MainActivity, video: JSONObject) {
 
 @Composable
 fun RowTemplate(
-        imageUrl: String = "",
-        number: Int = 0,
-        text1: String,
-        text2: String,
-        text3: String,
-        rounded: Boolean = false,
-        @DrawableRes iconId: Int,
-        onClick: () -> Unit,
-        onIconClick: () -> Unit
+    imageUrl: String = "",
+    imageSize: IntSize = IntSize(160, 160),
+    number: Int = 0,
+    text1: String,
+    text2: String,
+    text3: String,
+    rounded: Boolean = false,
+    @DrawableRes iconId: Int,
+    onClick: () -> Unit,
+    onIconClick: () -> Unit
 ) {
     Row(
             modifier = Modifier.height(80.dp) + Modifier.fillMaxWidth()
@@ -174,7 +176,7 @@ fun RowTemplate(
             verticalGravity = Alignment.CenterVertically
     ) {
         if(imageUrl.isNotEmpty()) {
-            val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), 160, 160))
+            val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(imageUrl.replace("-", "/"), imageSize.width, imageSize.height))
 
             if (loadPictureState is UiState.Success<Bitmap>)
                 Surface(
