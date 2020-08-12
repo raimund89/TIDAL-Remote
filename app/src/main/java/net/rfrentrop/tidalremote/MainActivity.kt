@@ -187,11 +187,8 @@ fun MainContent(activity: MainActivity) {
             Screen.Videos -> ScreenVideos(activity)
             Screen.Search -> ScreenSearch(activity)
             Screen.Collection -> ScreenCollection(activity)
-            Screen.Album -> TODO()
-            Screen.Artist -> ScreenArtist(activity)
-            Screen.Playlist -> TODO()
+            Screen.Page -> ScreenPage(activity)
             Screen.Track -> TODO()
-            Screen.Mix -> TODO()
             Screen.Settings -> ScreenSettings(activity)
         }
     }
