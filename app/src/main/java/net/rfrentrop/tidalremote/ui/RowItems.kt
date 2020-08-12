@@ -193,7 +193,7 @@ fun RowTemplate(
                         contentScale = ContentScale.FillHeight
                 )
         }
-        else {
+        else if(number != 0) {
             Text(
                 modifier = Modifier.padding(start = 20.dp),
                 text = "$number."
