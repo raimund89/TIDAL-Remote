@@ -76,7 +76,7 @@ fun RowAlbum(activity: MainActivity, album: JSONObject) {
 }
 
 @Composable
-fun RowTrack(activity: MainActivity, track: JSONObject) {
+fun RowTrack(activity: MainActivity, track: JSONObject, covers: Boolean = true) {
     // Construct the artist list
     val artists = ArrayList<String>()
     for(i in 0 until (track["artists"] as JSONArray).length())
@@ -90,7 +90,7 @@ fun RowTrack(activity: MainActivity, track: JSONObject) {
         flags.add("MASTER")
 
     RowTemplate(
-            imageUrl = track.getJSONObject("album")["cover"] as String,
+            imageUrl = if(covers) track.getJSONObject("album")["cover"] as String else "",
             text1 = track["title"] as String,
             text2 = artists.joinToString(", "),
             text3 = flags.joinToString(" / "),

@@ -61,7 +61,7 @@ fun ListAlbums(activity: MainActivity, albums: JSONArray, orientation: Orientati
 }
 
 @Composable
-fun ListTracks(activity: MainActivity, tracks: JSONArray, orientation: Orientation, limit: Int = 3) {
+fun ListTracks(activity: MainActivity, tracks: JSONArray, orientation: Orientation, limit: Int = 3, covers: Boolean = true) {
     if(orientation == Orientation.HORIZONTAL) {
         LazyRowItems(
                 modifier = Modifier.padding(bottom = 20.dp, start = 10.dp, end = 10.dp) + Modifier.height(220.dp),
@@ -77,7 +77,7 @@ fun ListTracks(activity: MainActivity, tracks: JSONArray, orientation: Orientati
             for (i in 0 until tracks.length()) {
                 if (i >= limit)
                     break
-                RowTrack(activity, tracks.getJSONObject(i))
+                RowTrack(activity, tracks.getJSONObject(i), covers=covers)
             }
         }
     }

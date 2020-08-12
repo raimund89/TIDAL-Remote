@@ -353,7 +353,6 @@ fun PageRow(activity: MainActivity, refresh: () -> Unit, row: JSONObject) {
             }
         }
         "ALBUM_ITEMS" -> {
-            Log.d("AlbumItems", "Number of tracks: ${items.length()}")
             RowHeader(text = "Tracks")
             Column(
                 modifier = Modifier.padding(start = 10.dp, end=10.dp)
@@ -391,7 +390,7 @@ fun PageRow(activity: MainActivity, refresh: () -> Unit, row: JSONObject) {
         }
         "TRACK_LIST" -> {
             RowHeader(text = if(row.getString("title").isEmpty()) "Tracks" else row.getString("title"))
-            ListTracks(activity, items, Orientation.VERTICAL, if(activity.manager.currentPage == PageType.MIX) row.getJSONObject("pagedList").getInt("totalNumberOfItems") else 4)
+            ListTracks(activity, items, Orientation.VERTICAL, if(activity.manager.currentPage == PageType.MIX) row.getJSONObject("pagedList").getInt("totalNumberOfItems") else 4, covers=false)
         }
         "ALBUM_LIST" -> {
             RowHeader(text = row.getString("title"))
