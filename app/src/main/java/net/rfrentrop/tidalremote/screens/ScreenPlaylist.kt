@@ -194,8 +194,12 @@ fun ScreenPlaylist(activity: MainActivity) {
                         val flags = ArrayList<String>()
                         if (item["explicit"] as Boolean)
                             flags.add("EXPLICIT")
-                        if (item["audioQuality"] as String == "HI_RES")
-                            flags.add("MASTER")
+                        if(item.has("audioQuality"))
+                            if (item["audioQuality"] as String == "HI_RES")
+                                flags.add("MASTER")
+                        else if(item.has("quality"))
+                                if(item.getString("quality").contains("1080"))
+                                    flags.add("FULLHD")
 
                         RowTemplate(
                             text1 = item.getString("title"),
