@@ -35,8 +35,10 @@ import net.rfrentrop.tidalremote.player.PlayerHost
 import net.rfrentrop.tidalremote.player.PlayerManager
 import net.rfrentrop.tidalremote.screens.*
 import net.rfrentrop.tidalremote.theme.TIDALRemoteTheme
+import net.rfrentrop.tidalremote.tidalapi.PageType
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.TidalUser
+import net.rfrentrop.tidalremote.ui.BackstackItem
 import net.rfrentrop.tidalremote.ui.Screen
 
 // TODO: add TidalManager to the onPause and onResume functions??
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     // Backend control variables: the navigation backstack, and managers for the
     // connection with Tidal and the current player (if any)
-    private val backstack = java.util.Stack<Screen>()
+    private val backstack = java.util.Stack<BackstackItem>()
     var manager = TidalManager(this)
     val player = PlayerManager(this)
 
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var nsdManager: NsdManager
 
     // States that should trigger a UI update
-    var currentPage = mutableStateOf(Screen.Home)
+    var currentPage = mutableStateOf(BackstackItem(Screen.Home, PageType.NONE, ""))
     var playerList = mutableStateMapOf<String, PlayerHost>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,23 +93,32 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if(backstack.size > 0) {
-            currentPage.value = backstack.pop()
+            val item = backstack.pop()
+
+            if(item.type != PageType.NONE)
+                manager.setPage(item.type, item.id)
+
+            currentPage.value = item
         }
         else {
             super.onBackPressed()
         }
     }
 
-    fun navigate(screen: Screen) {
+    fun navigate(screen: Screen, type: PageType = PageType.NONE, id: String = "") {
         if(screen == Screen.Home || screen == Screen.Videos || screen == Screen.Search || screen == Screen.Collection)
             backstack.clear()
         else
             backstack.push(currentPage.value)
-        currentPage.value = screen
+
+        if(type != PageType.NONE)
+            manager.setPage(type, id)
+
+        currentPage.value = BackstackItem(screen, type, id)
     }
 
     fun getScreen(): Screen {
-        return currentPage.value
+        return currentPage.value.page
     }
 
     override fun onResume() {

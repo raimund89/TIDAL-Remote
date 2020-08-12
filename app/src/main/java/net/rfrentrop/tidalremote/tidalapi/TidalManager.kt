@@ -8,6 +8,14 @@ import com.android.volley.toolbox.Volley
 import net.rfrentrop.tidalremote.MainActivity
 import org.json.JSONObject
 
+enum class PageType {
+    ARTIST,
+    ALBUM,
+    MIX,
+
+    NONE
+}
+
 class TidalManager (
     private val context: MainActivity
 ) {
@@ -33,6 +41,9 @@ class TidalManager (
     var currentVideo = ""
     var currentTrack = ""
     var currentMix = ""
+
+    var currentPage = PageType.NONE
+    var currentId = ""
 
     fun init(user: TidalUser) {
         queue = Volley.newRequestQueue(context)
@@ -213,8 +224,9 @@ class TidalManager (
         queue.add(request)
     }
 
-    fun setMix(mixId: String) {
-        currentMix = mixId
+    fun setPage(type: PageType, id: String) {
+        currentPage = type
+        currentId = id
     }
 
     fun getMix(depot: MutableState<JSONObject>) {
