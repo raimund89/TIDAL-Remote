@@ -1,7 +1,6 @@
 package net.rfrentrop.tidalremote.tidalapi
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -228,8 +227,6 @@ class TidalManager (
                         headers = null,
                         params = params,
                         listener = { response2 ->
-                            Log.d("TidalManager", "${API_LOCATION}playlists/$currentId/items")
-                            Log.d("TidalManager", params.toString())
                             val ret = JSONObject()
                             ret.put("details", response1)
                             ret.put("items", response2)

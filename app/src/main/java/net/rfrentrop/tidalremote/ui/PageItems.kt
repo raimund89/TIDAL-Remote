@@ -104,7 +104,7 @@ fun PageMix(activity: MainActivity, item: JSONObject) {
         text1 = item["title"] as String,
         text2 = item["subTitle"] as String,
         onClick = {
-            // TODO: Implement
+            activity.navigate(Screen.Page, PageType.MIX, item.getString("id"))
         }
     )
 }

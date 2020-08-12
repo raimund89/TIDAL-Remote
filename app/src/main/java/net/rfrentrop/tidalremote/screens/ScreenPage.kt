@@ -24,6 +24,7 @@ import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
+import net.rfrentrop.tidalremote.tidalapi.PageType
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.loadPicture
 import net.rfrentrop.tidalremote.ui.*
@@ -266,6 +267,91 @@ fun PageRow(activity: MainActivity, refresh: () -> Unit, row: JSONObject) {
                 }
             }
         }
+        "MIX_HEADER" -> {
+            val mix = row.getJSONObject("mix")
+
+            Column {
+                val loadPictureState = loadPicture(mix.getJSONObject("images").getJSONObject("LARGE").getString("url").replace("-", "/"))
+
+                if (loadPictureState is UiState.Success<Bitmap>)
+                    Image(
+                        modifier = Modifier.aspectRatio(1.3f) + Modifier.padding(20.dp),
+                        asset = loadPictureState.data.asImageAsset(),
+                        contentScale = ContentScale.FillHeight,
+                    )
+                else
+                    Column(
+                        horizontalGravity = Alignment.CenterHorizontally,
+                        modifier = Modifier.aspectRatio(1.3f)
+                    ) {
+                        Text(
+                            text = "Loading...",
+                            style = MaterialTheme.typography.body1
+                        )
+
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(top = 10.dp) + Modifier.size(100.dp),
+                            color = Color.White
+                        )
+                    }
+
+                Row(
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp, top=10.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = mix.getString("title"),
+                            color = Color.White,
+                            style = MaterialTheme.typography.h2,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        Text(
+                            text = mix.getString("subTitle"),
+                            color = Color.LightGray,
+                            style = MaterialTheme.typography.body2,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    // TODO: Add 'new playlist' button
+                }
+
+                // TODO: These rows are actually coming from the "playbackControls" JSONArray item
+                Row(
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp, top=10.dp, bottom=20.dp)
+                ) {
+                    Surface(
+                        color = Color.DarkGray,
+                        shape = RoundedCornerShape(5.dp),
+                        modifier = Modifier.weight(1f, true) + Modifier.padding(end=10.dp)
+                    ) {
+                        Text(
+                            text = "Play",
+                            style = MaterialTheme.typography.body2,
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top=10.dp, bottom=10.dp)
+                        )
+                    }
+                    Surface(
+                        color = Color.DarkGray,
+                        shape = RoundedCornerShape(5.dp),
+                        modifier = Modifier.weight(1f, true) + Modifier.padding(end=10.dp)
+                    ) {
+                        Text(
+                            text = "Shuffle",
+                            style = MaterialTheme.typography.body2,
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top=10.dp, bottom=10.dp)
+                        )
+                    }
+                }
+            }
+        }
         "ALBUM_ITEMS" -> {
             Log.d("AlbumItems", "Number of tracks: ${items.length()}")
             RowHeader(text = "Tracks")
@@ -304,8 +390,8 @@ fun PageRow(activity: MainActivity, refresh: () -> Unit, row: JSONObject) {
             }
         }
         "TRACK_LIST" -> {
-            RowHeader(text = row.getString("title"))
-            ListTracks(activity, items, Orientation.VERTICAL, 4)
+            RowHeader(text = if(row.getString("title").isEmpty()) "Tracks" else row.getString("title"))
+            ListTracks(activity, items, Orientation.VERTICAL, if(activity.manager.currentPage == PageType.MIX) row.getJSONObject("pagedList").getInt("totalNumberOfItems") else 4)
         }
         "ALBUM_LIST" -> {
             RowHeader(text = row.getString("title"))
