@@ -1,6 +1,7 @@
 package net.rfrentrop.tidalremote.screens
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.Composable
 import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
@@ -179,6 +180,8 @@ fun ScreenPlaylist(activity: MainActivity) {
                 Column(
                     modifier = Modifier.padding(start = 10.dp, end=10.dp)
                 ) {
+                    Log.d("ScreenPlaylist", "Number of tracks: ${items.length()}")
+
                     for (i in 0 until items.length()) {
                         val item = items.getJSONObject(i).getJSONObject("item")
 
