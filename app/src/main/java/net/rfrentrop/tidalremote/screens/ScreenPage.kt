@@ -30,9 +30,10 @@ import net.rfrentrop.tidalremote.ui.*
 import org.json.JSONArray
 import org.json.JSONObject
 
+// TODO: Page doesn't return to top when refreshing
+
 @Composable
 fun ScreenPage(activity: MainActivity) {
-    Log.d("Id", activity.manager.currentId)
     val (pageState, refreshPage) = activity.manager.getPageResult()
 
     activity.refresher = refreshPage

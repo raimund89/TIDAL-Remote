@@ -11,7 +11,7 @@ enum class Screen {
     Settings,
 
     Page,
-    Track,
+    Playlist,
 }
 
 data class BackstackItem (

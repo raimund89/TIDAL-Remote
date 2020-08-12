@@ -40,13 +40,6 @@ class TidalManager (
 
     private lateinit var queue: RequestQueue
 
-    var currentArtist = -1
-    var currentAlbum = ""
-    var currentPlaylist = ""
-    var currentVideo = ""
-    var currentTrack = ""
-    var currentMix = ""
-
     var currentPage = PageType.NONE
     var currentId = ""
 
@@ -208,6 +201,57 @@ class TidalManager (
     fun setPage(type: PageType, id: String) {
         currentPage = type
         currentId = id
+    }
+
+    @Composable
+    fun getPlaylist(): RefreshableUiStateHandler<JSONObject> {
+        var pageState: RefreshableUiState<JSONObject> by state { RefreshableUiState.Success(data = null, loading = true) }
+
+        fun repositoryCall(callback: (JSONObject) -> Unit) {
+            val params = requestParams()
+
+            queue.add(TidalRequest(
+                meth = Request.Method.GET,
+                url = API_LOCATION + "playlists/$currentId",
+                headers = null,
+                params = params,
+                listener = { response1 ->
+                    queue.add(TidalRequest(
+                        meth = Request.Method.GET,
+                        url = API_LOCATION + "playlists/$currentId/items",
+                        headers = null,
+                        params = params,
+                        listener = { response2 ->
+                            val ret = JSONObject()
+                            ret.put("details", response1)
+                            ret.put("items", response2)
+                            callback(ret)
+                        },
+                        errorListener = {
+                            // TODO: Implement the error in the UI as well
+                            it.printStackTrace()
+                        }
+                    ))
+                },
+                errorListener = {
+                    // TODO: Implement the error in the UI as well
+                    it.printStackTrace()
+                }
+            ))
+        }
+
+        val refresh = {
+            pageState = RefreshableUiState.Success(data = pageState.currentData, loading = true)
+            repositoryCall { result ->
+                pageState = RefreshableUiState.Success(data = result, loading = false)
+            }
+        }
+
+        onActive {
+            refresh()
+        }
+
+        return RefreshableUiStateHandler(pageState, refresh)
     }
 
     @Composable

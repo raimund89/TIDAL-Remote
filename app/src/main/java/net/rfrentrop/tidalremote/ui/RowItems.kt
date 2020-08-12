@@ -113,7 +113,7 @@ fun RowPlaylist(activity: MainActivity, playlist: JSONObject) {
             text3 = "${playlist["numberOfTracks"] as Int} TRACKS",
             iconId = R.drawable.ic_more,
             onClick = {
-                // TODO: Implement
+                activity.navigate(Screen.Playlist, PageType.NONE, playlist.getString("uuid"))
             },
             onIconClick = {
 

@@ -67,6 +67,8 @@ fun PageAlbum(activity: MainActivity, item: JSONObject) {
 @Composable
 fun PagePlaylist(activity: MainActivity, item: JSONObject, creatorLabel: String = "creators") {
 
+    // TODO: This code is wrong, TIDAL is not always caught
+
     var creators = ""
     if(creatorLabel == "creators") {
         if (item.getJSONArray(creatorLabel).length() > 0)
@@ -90,7 +92,7 @@ fun PagePlaylist(activity: MainActivity, item: JSONObject, creatorLabel: String 
         text2 = creators,
         text3 = numberOf,
         onClick = {
-            // TODO: Implement
+            activity.navigate(Screen.Playlist, PageType.NONE, item.getString("uuid"))
         }
     )
 }
