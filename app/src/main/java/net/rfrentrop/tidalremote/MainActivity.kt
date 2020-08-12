@@ -96,8 +96,7 @@ class MainActivity : AppCompatActivity() {
         if(backstack.size > 0) {
             val item = backstack.pop()
 
-            if(item.type != PageType.NONE)
-                manager.setPage(item.type, item.id)
+            manager.setPage(item.type, item.id)
 
             if(currentPage.value.page == item.page)
                 refresher?.let { it() }
@@ -115,8 +114,7 @@ class MainActivity : AppCompatActivity() {
         else
             backstack.push(currentPage.value)
 
-        if(type != PageType.NONE)
-            manager.setPage(type, id)
+        manager.setPage(type, id)
 
         if(currentPage.value.page == screen)
             refresher?.let { it() }
@@ -195,8 +193,8 @@ fun MainContent(activity: MainActivity) {
             Screen.Search -> ScreenSearch(activity)
             Screen.Collection -> ScreenCollection(activity)
             Screen.Page -> ScreenPage(activity)
-            Screen.Track -> TODO()
             Screen.Settings -> ScreenSettings(activity)
+            Screen.Playlist -> ScreenPlaylist(activity)
         }
     }
 }
