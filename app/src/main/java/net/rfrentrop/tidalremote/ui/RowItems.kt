@@ -157,7 +157,8 @@ fun RowVideo(activity: MainActivity, video: JSONObject) {
 
 @Composable
 fun RowTemplate(
-        imageUrl: String,
+        imageUrl: String = "",
+        number: Int = 0,
         text1: String,
         text2: String,
         text3: String,
@@ -193,10 +194,9 @@ fun RowTemplate(
                 )
         }
         else {
-            Image(
-                    modifier = Modifier.aspectRatio(1f),
-                    asset = imageResource(id = R.drawable.emptycover),
-                    contentScale = ContentScale.FillHeight
+            Text(
+                modifier = Modifier.padding(start = 20.dp),
+                text = "$number."
             )
         }
 

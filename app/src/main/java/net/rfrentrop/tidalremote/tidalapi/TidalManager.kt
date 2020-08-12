@@ -19,6 +19,8 @@ enum class PageType {
     NONE
 }
 
+// TODO: Move all getter functions to composables
+
 class TidalManager (
     private val context: MainActivity
 ) {

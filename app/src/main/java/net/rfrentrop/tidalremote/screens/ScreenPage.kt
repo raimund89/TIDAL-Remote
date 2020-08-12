@@ -23,6 +23,7 @@ import androidx.ui.text.style.TextAlign
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
+import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.loadPicture
 import net.rfrentrop.tidalremote.ui.*
@@ -31,6 +32,7 @@ import org.json.JSONObject
 
 @Composable
 fun ScreenPage(activity: MainActivity) {
+    Log.d("Id", activity.manager.currentId)
     val (pageState, refreshPage) = activity.manager.getPageResult()
 
     activity.refresher = refreshPage
@@ -173,6 +175,133 @@ fun PageRow(activity: MainActivity, refresh: () -> Unit, row: JSONObject) {
                 }
             }
         }
+        "ALBUM_HEADER" -> {
+            val album = row.getJSONObject("album")
+
+            Column {
+                val loadPictureState = loadPicture(TidalManager.IMAGE_URL.format(album.getString("cover").replace("-", "/"), 750, 750))
+
+                if (loadPictureState is UiState.Success<Bitmap>)
+                    Image(
+                        modifier = Modifier.aspectRatio(1.3f) + Modifier.padding(20.dp),
+                        asset = loadPictureState.data.asImageAsset(),
+                        contentScale = ContentScale.FillHeight,
+                    )
+                else
+                    Column(
+                        horizontalGravity = Alignment.CenterHorizontally,
+                        modifier = Modifier.aspectRatio(1.3f)
+                    ) {
+                        Text(
+                            text = "Loading...",
+                            style = MaterialTheme.typography.body1
+                        )
+
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(top = 10.dp) + Modifier.size(100.dp),
+                            color = Color.White
+                        )
+                    }
+
+                Row(
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp, top=10.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = album.getString("title"),
+                            color = Color.White,
+                            style = MaterialTheme.typography.h2,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        // Construct the artist list
+                        val artists = ArrayList<String>()
+                        for(i in 0 until (album["artists"] as JSONArray).length())
+                            artists.add(album.getJSONArray("artists").getJSONObject(i)["name"] as String)
+
+                        Text(
+                            text = artists.joinToString(", "),
+                            color = Color.LightGray,
+                            style = MaterialTheme.typography.body2,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    // TODO: Add 'like' button
+                }
+
+                // TODO: These rows are actually coming from the "playbackControls" JSONArray item
+                Row(
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp, top=10.dp, bottom=20.dp)
+                ) {
+                    Surface(
+                        color = Color.DarkGray,
+                        shape = RoundedCornerShape(5.dp),
+                        modifier = Modifier.weight(1f, true) + Modifier.padding(end=10.dp)
+                    ) {
+                        Text(
+                            text = "Play",
+                            style = MaterialTheme.typography.body2,
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top=10.dp, bottom=10.dp)
+                        )
+                    }
+                    Surface(
+                        color = Color.DarkGray,
+                        shape = RoundedCornerShape(5.dp),
+                        modifier = Modifier.weight(1f, true) + Modifier.padding(end=10.dp)
+                    ) {
+                        Text(
+                            text = "Shuffle",
+                            style = MaterialTheme.typography.body2,
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top=10.dp, bottom=10.dp)
+                        )
+                    }
+                }
+            }
+        }
+        "ALBUM_ITEMS" -> {
+            Log.d("AlbumItems", "Number of tracks: ${items.length()}")
+            RowHeader(text = "Tracks")
+            Column(
+                modifier = Modifier.padding(start = 10.dp, end=10.dp)
+            ) {
+                for (i in 0 until items.length()) {
+                    val item = items.getJSONObject(i).getJSONObject("item")
+
+                    // Construct the artist list
+                    val artists = ArrayList<String>()
+                    for(i in 0 until (item["artists"] as JSONArray).length())
+                        artists.add(item.getJSONArray("artists").getJSONObject(i)["name"] as String)
+
+                    // Construct the flags list
+                    val flags = ArrayList<String>()
+                    if(item["explicit"] as Boolean)
+                        flags.add("EXPLICIT")
+                    if(item["audioQuality"] as String == "HI_RES")
+                        flags.add("MASTER")
+
+                    RowTemplate(
+                        number = item.getInt("trackNumber"),
+                        text1 = item.getString("title"),
+                        text2 = artists.joinToString(", "),
+                        text3 = flags.joinToString(" / "),
+                        iconId = R.drawable.ic_more,
+                        onClick = {
+
+                        },
+                        onIconClick = {
+
+                        }
+                    )
+                }
+            }
+        }
         "TRACK_LIST" -> {
             RowHeader(text = row.getString("title"))
             ListTracks(activity, items, Orientation.VERTICAL, 4)
@@ -222,10 +351,6 @@ fun PageRow(activity: MainActivity, refresh: () -> Unit, row: JSONObject) {
                     }
                 }
             }
-        }
-        "ITEM_LIST_WITH_ROLES" -> {
-            RowHeader(text = row.getString("title"))
-            Text("Credits list to be implemented!!!!!")
         }
         "SOCIAL" -> {
             RowHeader(text = row.getString("title"))
