@@ -99,6 +99,9 @@ class MainActivity : AppCompatActivity() {
             if(item.type != PageType.NONE)
                 manager.setPage(item.type, item.id)
 
+            if(currentPage.value.page == item.page)
+                refresher?.let { it() }
+
             currentPage.value = item
         }
         else {
