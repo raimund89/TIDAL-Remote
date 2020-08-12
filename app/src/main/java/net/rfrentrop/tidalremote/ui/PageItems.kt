@@ -20,6 +20,7 @@ import androidx.ui.unit.IntSize
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
+import net.rfrentrop.tidalremote.tidalapi.PageType
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.loadPicture
 import org.json.JSONArray
@@ -39,8 +40,7 @@ fun PageArtist(activity: MainActivity, item: JSONObject) {
         text1 = item["name"] as String,
         text2 = roles.joinToString(", "),
         onClick = {
-            activity.manager.setArtist(item.getInt("id"))
-            activity.navigate(Screen.Artist)
+            activity.navigate(Screen.Page, PageType.ARTIST, item.getInt("id").toString())
         }
     )
 }
@@ -59,7 +59,7 @@ fun PageAlbum(activity: MainActivity, item: JSONObject) {
         text2 = artists.joinToString(", "),
         text3 = if(!item.isNull("releaseDate")) (item["releaseDate"] as String).substring(0, 4) else "",
         onClick = {
-            // TODO: Implement
+            activity.navigate(Screen.Page, PageType.ALBUM, item.getInt("id").toString())
         }
     )
 }
@@ -102,7 +102,7 @@ fun PageMix(activity: MainActivity, item: JSONObject) {
         text1 = item["title"] as String,
         text2 = item["subTitle"] as String,
         onClick = {
-
+            // TODO: Implement
         }
     )
 }
@@ -128,7 +128,7 @@ fun PageTrack(activity: MainActivity, item: JSONObject) {
             text2 = item.getJSONObject("album")["title"] as String,
             text3 = durationString,
             onClick = {
-
+                // TODO: Implement
             }
     )
 }
@@ -160,7 +160,7 @@ fun PageVideo(activity: MainActivity, item: JSONObject) {
             text2 = artists.joinToString(", "),
             text3 = durationString,
             onClick = {
-
+                // TODO: Implement
             }
     )
 }

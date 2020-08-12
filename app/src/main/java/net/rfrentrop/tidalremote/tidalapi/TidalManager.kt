@@ -1,11 +1,14 @@
 package net.rfrentrop.tidalremote.tidalapi
 
 import android.content.Context
-import androidx.compose.MutableState
+import androidx.compose.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import net.rfrentrop.tidalremote.MainActivity
+import net.rfrentrop.tidalremote.ui.RefreshableUiState
+import net.rfrentrop.tidalremote.ui.RefreshableUiStateHandler
+import net.rfrentrop.tidalremote.ui.currentData
 import org.json.JSONObject
 
 enum class PageType {
@@ -124,6 +127,25 @@ class TidalManager (
         queue.add(request)
     }
 
+    fun getFavorites(depot: MutableState<JSONObject>, category: String = "") {
+        val params = requestParams()
+
+        val request = TidalRequest(
+                meth = Request.Method.GET,
+                url = API_LOCATION + "users/${user.userId}/${if(category.isNotEmpty()) category else "favorites/ids"}",
+                headers = null,
+                params = params,
+                listener = { response ->
+                    depot.value = response
+                },
+                errorListener = {
+                    it.printStackTrace()
+                }
+        )
+
+        queue.add(request)
+    }
+
     fun getExplore(depot: MutableState<JSONObject>) {
         val params = requestParams()
 
@@ -181,72 +203,49 @@ class TidalManager (
         queue.add(request)
     }
 
-    fun getFavorites(depot: MutableState<JSONObject>, category: String = "") {
-        val params = requestParams()
-
-        val request = TidalRequest(
-                meth = Request.Method.GET,
-                url = API_LOCATION + "users/${user.userId}/${if(category.isNotEmpty()) category else "favorites/ids"}",
-                headers = null,
-                params = params,
-                listener = { response ->
-                    depot.value = response
-                },
-                errorListener = {
-                    it.printStackTrace()
-                }
-        )
-
-        queue.add(request)
-    }
-
-    fun setArtist(artistId: Int) {
-        currentArtist = artistId
-    }
-
-    fun getArtist(depot: MutableState<JSONObject>) {
-        val params = requestParams()
-        params["artistId"] = currentArtist.toString()
-
-        val request = TidalRequest(
-                meth = Request.Method.GET,
-                url = API_LOCATION + "pages/artist",
-                headers = null,
-                params = params,
-                listener = { response ->
-                    depot.value = response
-                },
-                errorListener = {
-                    it.printStackTrace()
-                }
-        )
-
-        queue.add(request)
-    }
-
     fun setPage(type: PageType, id: String) {
         currentPage = type
         currentId = id
     }
 
-    fun getMix(depot: MutableState<JSONObject>) {
-        val params = requestParams()
-        params["mixId"] = currentMix
+    @Composable
+    fun getPageResult(): RefreshableUiStateHandler<JSONObject> {
+        var pageState: RefreshableUiState<JSONObject> by state { RefreshableUiState.Success(data = null, loading = true) }
 
-        val request = TidalRequest(
-                meth = Request.Method.GET,
-                url = API_LOCATION + "pages/mix",
-                headers = null,
-                params = params,
-                listener = { response ->
-                    depot.value = response
-                },
-                errorListener = {
-                    it.printStackTrace()
-                }
-        )
+        fun repositoryCall(callback: (JSONObject) -> Unit) {
+            val params = requestParams()
 
-        queue.add(request)
+            val pageName = currentPage.name.toLowerCase()
+
+            params["${pageName}Id"] = currentId
+
+            queue.add(TidalRequest(
+                    meth = Request.Method.GET,
+                    url = API_LOCATION + "pages/$pageName",
+                    headers = null,
+                    params = params,
+                    listener = { response ->
+                        callback(response)
+                    },
+                    errorListener = {
+                        // TODO: Implement the error in the UI as well
+                        it.printStackTrace()
+                    }
+            ))
+        }
+
+        val refresh = {
+            pageState = RefreshableUiState.Success(data = pageState.currentData, loading = true)
+            repositoryCall { result ->
+                pageState = RefreshableUiState.Success(data = result, loading = false)
+            }
+        }
+
+        onActive {
+            refresh()
+        }
+
+        return RefreshableUiStateHandler(pageState, refresh)
     }
 
     override fun toString(): String {

@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     // States that should trigger a UI update
     var currentPage = mutableStateOf(BackstackItem(Screen.Home, PageType.NONE, ""))
+    var refresher: (() -> Unit)? = null
     var playerList = mutableStateMapOf<String, PlayerHost>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,6 +114,9 @@ class MainActivity : AppCompatActivity() {
 
         if(type != PageType.NONE)
             manager.setPage(type, id)
+
+        if(currentPage.value.page == screen)
+            refresher?.let { it() }
 
         currentPage.value = BackstackItem(screen, type, id)
     }

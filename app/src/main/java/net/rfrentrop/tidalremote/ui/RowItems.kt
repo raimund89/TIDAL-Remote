@@ -24,6 +24,7 @@ import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
+import net.rfrentrop.tidalremote.tidalapi.PageType
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.loadPicture
 import org.json.JSONArray
@@ -44,8 +45,7 @@ fun RowArtist(activity: MainActivity, artist: JSONObject) {
             rounded = true,
             iconId = R.drawable.ic_more,
             onClick = {
-                activity.manager.setArtist(artist.getInt("id"))
-                activity.navigate(Screen.Artist)
+                activity.navigate(Screen.Page, PageType.ARTIST, artist.getInt("id").toString())
             },
             onIconClick = {
 
@@ -67,7 +67,7 @@ fun RowAlbum(activity: MainActivity, album: JSONObject) {
             text3 = (album["releaseDate"] as String).substring(0, 4),
             iconId = R.drawable.ic_more,
             onClick = {
-
+                activity.navigate(Screen.Page, PageType.ALBUM, album.getInt("id").toString())
             },
             onIconClick = {
 
@@ -96,7 +96,7 @@ fun RowTrack(activity: MainActivity, track: JSONObject) {
             text3 = flags.joinToString(" / "),
             iconId = R.drawable.ic_more,
             onClick = {
-
+                // TODO: Implement
             },
             onIconClick = {
 
@@ -113,7 +113,7 @@ fun RowPlaylist(activity: MainActivity, playlist: JSONObject) {
             text3 = "${playlist["numberOfTracks"] as Int} TRACKS",
             iconId = R.drawable.ic_more,
             onClick = {
-
+                // TODO: Implement
             },
             onIconClick = {
 
@@ -147,7 +147,7 @@ fun RowVideo(activity: MainActivity, video: JSONObject) {
             text3 = durationString,
             iconId = R.drawable.ic_more,
             onClick = {
-
+                // TODO: Implement
             },
             onIconClick = {
 
