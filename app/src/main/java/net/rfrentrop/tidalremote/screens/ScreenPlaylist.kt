@@ -99,8 +99,7 @@ fun ScreenPlaylist(activity: MainActivity) {
                                 overflow = TextOverflow.Ellipsis
                             )
 
-                            var creator = ""
-                            creator = if (details.getJSONObject("creator").has("name"))
+                            val creator = if (details.getJSONObject("creator").has("name"))
                                 "by " + details.getJSONObject("creator")["name"] as String
                             else
                                 "by TIDAL"
@@ -184,8 +183,8 @@ fun ScreenPlaylist(activity: MainActivity) {
 
                         // Construct the artist list
                         val artists = ArrayList<String>()
-                        for (i in 0 until (item["artists"] as JSONArray).length())
-                            artists.add(item.getJSONArray("artists").getJSONObject(i)["name"] as String)
+                        for (j in 0 until (item["artists"] as JSONArray).length())
+                            artists.add(item.getJSONArray("artists").getJSONObject(j)["name"] as String)
 
                         // Construct the flags list
                         val flags = ArrayList<String>()

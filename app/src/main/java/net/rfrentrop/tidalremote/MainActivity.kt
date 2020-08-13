@@ -35,10 +35,10 @@ import net.rfrentrop.tidalremote.player.PlayerHost
 import net.rfrentrop.tidalremote.player.PlayerManager
 import net.rfrentrop.tidalremote.screens.*
 import net.rfrentrop.tidalremote.theme.TIDALRemoteTheme
-import net.rfrentrop.tidalremote.tidalapi.PageType
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.TidalUser
 import net.rfrentrop.tidalremote.ui.BackstackItem
+import net.rfrentrop.tidalremote.ui.PageType
 import net.rfrentrop.tidalremote.ui.Screen
 
 // TODO: add TidalManager to the onPause and onResume functions??

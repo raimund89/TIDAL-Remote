@@ -6,18 +6,11 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import net.rfrentrop.tidalremote.MainActivity
+import net.rfrentrop.tidalremote.ui.PageType
 import net.rfrentrop.tidalremote.ui.RefreshableUiState
 import net.rfrentrop.tidalremote.ui.RefreshableUiStateHandler
 import net.rfrentrop.tidalremote.ui.currentData
 import org.json.JSONObject
-
-enum class PageType {
-    ARTIST,
-    ALBUM,
-    MIX,
-
-    NONE
-}
 
 enum class StreamType {
     TRACK,

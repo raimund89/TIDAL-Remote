@@ -1,7 +1,5 @@
 package net.rfrentrop.tidalremote.ui
 
-import net.rfrentrop.tidalremote.tidalapi.PageType
-
 enum class Screen {
     Home,
     Videos,

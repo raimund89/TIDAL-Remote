@@ -24,7 +24,6 @@ import androidx.ui.unit.IntSize
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
-import net.rfrentrop.tidalremote.tidalapi.PageType
 import net.rfrentrop.tidalremote.tidalapi.StreamType
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.loadPicture
@@ -179,11 +178,10 @@ fun RowVideo(activity: MainActivity, video: JSONObject) {
     val minutes = duration.rem(3600) / 60
     val seconds = duration.rem(60)
 
-    var durationString = ""
-    if(hours > 0)
-        durationString = "${hours}HR ${minutes}MIN"
+    val durationString = if(hours > 0)
+        "${hours}HR ${minutes}MIN"
     else
-        durationString = "${minutes}MIN ${seconds}SEC"
+        "${minutes}MIN ${seconds}SEC"
 
     RowTemplate(
             imageUrl = video["imageId"] as String,
