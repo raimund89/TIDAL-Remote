@@ -22,7 +22,7 @@ data class PlayerHost(
 // TODO: Automatically reconnect after a host temporarily disconnects
 
 class PlayerManager(
-        context: MainActivity
+        private val context: MainActivity
 ): WebSocketListener(){
 
         private val client = OkHttpClient
@@ -55,11 +55,15 @@ class PlayerManager(
 
         fun connectToPlayer(player: PlayerHost) {
                 Log.e("PlayerManager", "Trying to connect to websocket with URL wss://${player.host.hostAddress}:${player.port}.")
+
                 val request = Request
                         .Builder()
                         .url("wss://${player.host.hostAddress}:${player.port}")
                         .build()
-                ws = client.newWebSocket(request, playerSocketListener)
+                ws = client.newWebSocket(request, PlayerSocketListener())
+
+                currentPlayer = player
+                context.currentPlayer.value = currentPlayer!!
         }
 
         fun disconnectFromPlayer() {
@@ -67,24 +71,12 @@ class PlayerManager(
                         ws?.close(1000, null)
                 }
 
-                client.dispatcher.executorService.shutdown()
-
-                currentPlayer = null
-                currentPlaylist.clear()
-                currentTrack = null
-                currentPosition = 0
+                //client.dispatcher.executorService.
         }
 
-        fun sendCommand(command: String) {
-                // TODO: Further implement this
-                ws?.send(command)
-        }
-
-        private val playerSocketListener = object : WebSocketListener() {
-
+        inner class PlayerSocketListener: WebSocketListener() {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                         Log.e("PlayerManager", "Connected!")
-                        // TODO: Call a callback, which shows a player is connected
                         // TODO: Update the current playlist and currently playing track
                 }
 
@@ -132,6 +124,7 @@ class PlayerManager(
                         currentPlaylist.clear()
                         currentTrack = null
                         currentPosition = 0
+                        context.currentPlayer.value = PlayerHost(InetAddress.getLoopbackAddress(), 22, "<No Player>", "0.0")
                 }
 
                 override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
@@ -139,6 +132,7 @@ class PlayerManager(
                         currentPlaylist.clear()
                         currentTrack = null
                         currentPosition = 0
+                        context.currentPlayer.value = PlayerHost(InetAddress.getLoopbackAddress(), 22, "<No Player>", "0.0")
                 }
         }
 

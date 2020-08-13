@@ -42,6 +42,7 @@ import net.rfrentrop.tidalremote.tidalapi.TidalUser
 import net.rfrentrop.tidalremote.ui.BackstackItem
 import net.rfrentrop.tidalremote.ui.PageType
 import net.rfrentrop.tidalremote.ui.Screen
+import java.net.InetAddress
 
 // TODO: add TidalManager to the onPause and onResume functions??
 
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity() {
     var currentPage = mutableStateOf(BackstackItem(Screen.Home, PageType.NONE, ""))
     var refresher: (() -> Unit)? = null
     var playerList = mutableStateMapOf<String, PlayerHost>()
+    var currentPlayer = mutableStateOf(PlayerHost(InetAddress.getLoopbackAddress(), 22, "<No Player>", "0.0"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
