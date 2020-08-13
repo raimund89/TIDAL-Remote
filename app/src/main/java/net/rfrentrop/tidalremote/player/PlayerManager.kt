@@ -15,7 +15,7 @@ data class PlayerHost(
         val version: String
 )
 
-// TODO: Add calls for: forward, rewind, remove, shuffle, add at position
+// TODO: Add calls for: forward, rewind, remove, shuffle, seek, move in playlist
 // TODO: Add video calls for: play, pause, resume, stop, previous, next, forward, rewind, add, remove, add at position
 
 class PlayerManager(
