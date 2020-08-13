@@ -6,6 +6,7 @@ import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
 import androidx.compose.mutableStateMapOf
@@ -176,6 +177,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+            Log.e("MainActivity", "Resolved host")
             // If the player already exists, update it. If not, insert it.
             playerList[serviceInfo.serviceName] = PlayerHost(serviceInfo.host,
                 serviceInfo.port,
