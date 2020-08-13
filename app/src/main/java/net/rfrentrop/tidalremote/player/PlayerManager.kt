@@ -1,5 +1,6 @@
 package net.rfrentrop.tidalremote.player
 
+import androidx.ui.foundation.currentTextStyle
 import net.rfrentrop.tidalremote.MainActivity
 import okhttp3.*
 import org.json.JSONObject
@@ -14,7 +15,7 @@ data class PlayerHost(
         val version: String
 )
 
-// TODO: Add calls for: play, pause, resume, stop, previous, next, forward, rewind, add, remove, shuffle, add at position
+// TODO: Add calls for: forward, rewind, remove, shuffle, add at position
 // TODO: Add video calls for: play, pause, resume, stop, previous, next, forward, rewind, add, remove, add at position
 
 class PlayerManager(
@@ -25,6 +26,8 @@ class PlayerManager(
         var ws: WebSocket? = null
 
         private var currentPlayer: PlayerHost? = null
+        private var currentPlaylist = mutableListOf<JSONObject>()
+        private var currentTrack: JSONObject? = null
 
         fun connectToPlayer(player: PlayerHost) {
                 val request = Request.Builder().url("ws://${player.host.hostAddress}:${player.port}").build()
@@ -55,6 +58,16 @@ class PlayerManager(
 
                 override fun onMessage(webSocket: WebSocket, text: String) {
                         // TODO: Received a message, which is probably the current state of affairs
+                        val payload = JSONObject(text)
+                        if(payload.has("playlist")) {
+                                currentPlaylist = MutableList(payload.getJSONArray("payload").length()) {
+                                        payload.getJSONArray("payload")[it] as JSONObject
+                                }
+                        }
+
+                        if(payload.has("currentTrack")) {
+                                currentTrack = payload.getJSONObject("currentTrack")
+                        }
                 }
 
                 override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -91,6 +104,42 @@ class PlayerManager(
                 payload.put("command", "queue")
                 payload.put("track", track)
                 payload.put("url", url)
+
+                ws?.send(payload.toString())
+        }
+
+        fun removeTrack(position: Int) {
+                val payload = JSONObject()
+                payload.put("command", "remove")
+                payload.put("position", position)
+
+                ws?.send(payload.toString())
+        }
+
+        fun playTrack() {
+                val payload = JSONObject()
+                payload.put("command", "play")
+
+                ws?.send(payload.toString())
+        }
+
+        fun pauseTrack() {
+                val payload = JSONObject()
+                payload.put("command", "pause")
+
+                ws?.send(payload.toString())
+        }
+
+        fun previousTrack() {
+                val payload = JSONObject()
+                payload.put("command", "previous")
+
+                ws?.send(payload.toString())
+        }
+
+        fun nextTrack() {
+                val payload = JSONObject()
+                payload.put("command", "next")
 
                 ws?.send(payload.toString())
         }
