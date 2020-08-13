@@ -3,7 +3,7 @@
 <network-security-config>
     <debug-overrides>
         <trust-anchors>
-            <certificates src="@raw/selfsigned"/>
+            <certificates src="@raw/self_certificate"/>
         </trust-anchors>
     </debug-overrides>
 </network-security-config>
