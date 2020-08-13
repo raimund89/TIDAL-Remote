@@ -7,8 +7,6 @@ import org.json.JSONObject
 import java.net.InetAddress
 import javax.net.ssl.HostnameVerifier
 
-// TODO: Implement ipv6?
-
 data class PlayerHost(
         val host: InetAddress,
         val port: Int,
@@ -20,6 +18,8 @@ data class PlayerHost(
 // TODO: Add video calls for: play, pause, resume, stop, previous, next, forward, rewind, add, remove, add at position
 
 // TODO: Automatically reconnect after a host temporarily disconnects
+// Reconnection works when controlled by the phone. But if a websocket suddenly closes, reconnection needs to be initiated
+// Also set timeouts for retries
 
 class PlayerManager(
         private val context: MainActivity
@@ -37,6 +37,8 @@ class PlayerManager(
         private var currentTrack: JSONObject? = null
         private var currentPosition = 0
 
+        private var previousPlayer: PlayerHost? = null
+
         fun getCurrentTrack(): JSONObject? {
                 return currentTrack
         }
@@ -53,6 +55,12 @@ class PlayerManager(
                 return currentPosition
         }
 
+        fun reconnectToPlayer() {
+                previousPlayer?.let {
+                        connectToPlayer(it)
+                }
+        }
+
         fun connectToPlayer(player: PlayerHost) {
                 Log.e("PlayerManager", "Trying to connect to websocket with URL wss://${player.host.hostAddress}:${player.port}.")
 
@@ -63,15 +71,14 @@ class PlayerManager(
                 ws = client.newWebSocket(request, PlayerSocketListener())
 
                 currentPlayer = player
-                context.currentPlayer.value = currentPlayer!!
+                previousPlayer = player
+                context.currentPlayer.value = player
         }
 
         fun disconnectFromPlayer() {
                 currentPlayer?.let {
                         ws?.close(1000, null)
                 }
-
-                //client.dispatcher.executorService.
         }
 
         inner class PlayerSocketListener: WebSocketListener() {

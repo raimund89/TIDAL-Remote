@@ -136,12 +136,16 @@ class MainActivity : AppCompatActivity() {
         Handler(Looper.myLooper()!!).postDelayed({
             nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
         }, 1000)
+
+        player.reconnectToPlayer()
     }
 
     override fun onPause() {
         super.onPause()
 
         nsdManager.stopServiceDiscovery(discoveryListener)
+
+        player.disconnectFromPlayer()
     }
 
     private val discoveryListener = object : NsdManager.DiscoveryListener {
