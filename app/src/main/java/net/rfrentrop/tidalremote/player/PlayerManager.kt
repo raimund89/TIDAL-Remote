@@ -32,23 +32,13 @@ class PlayerManager(
                 .build()
         var ws: WebSocket? = null
 
-        private var currentPlayer: PlayerHost? = null
         private var currentPlaylist = mutableListOf<JSONObject>()
-        private var currentTrack: JSONObject? = null
         private var currentPosition = 0
 
         private var previousPlayer: PlayerHost? = null
 
-        fun getCurrentTrack(): JSONObject? {
-                return currentTrack
-        }
-
         fun getCurrentPlaylist(): List<JSONObject> {
                 return currentPlaylist
-        }
-
-        fun getCurrentPlayer(): PlayerHost? {
-                return currentPlayer
         }
 
         fun getCurrentPosition(): Int {
@@ -70,15 +60,12 @@ class PlayerManager(
                         .build()
                 ws = client.newWebSocket(request, PlayerSocketListener())
 
-                currentPlayer = player
                 previousPlayer = player
                 context.currentPlayer.value = player
         }
 
         fun disconnectFromPlayer() {
-                currentPlayer?.let {
-                        ws?.close(1000, null)
-                }
+                ws?.close(1000, null)
         }
 
         inner class PlayerSocketListener: WebSocketListener() {
@@ -103,10 +90,10 @@ class PlayerManager(
                                         }
                         }
 
-                        currentTrack = if(payload.has("currentTrack")) {
+                        context.currentTrack.value = if(payload.has("currentTrack")) {
                                 payload.getJSONObject("currentTrack")
                         } else {
-                                null
+                                JSONObject()
                         }
 
                         currentPosition = if(payload.has("position"))
@@ -127,17 +114,15 @@ class PlayerManager(
                         // TODO: Call a callback, which shows the player disconnected
                         // TODO: Clear playlist and currently playing
 
-                        currentPlayer = null
                         currentPlaylist.clear()
-                        currentTrack = null
+                        context.currentTrack.value = JSONObject()
                         currentPosition = 0
                         context.currentPlayer.value = PlayerHost(InetAddress.getLoopbackAddress(), 22, "<No Player>", "0.0")
                 }
 
                 override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                        currentPlayer = null
                         currentPlaylist.clear()
-                        currentTrack = null
+                        context.currentTrack.value = JSONObject()
                         currentPosition = 0
                         context.currentPlayer.value = PlayerHost(InetAddress.getLoopbackAddress(), 22, "<No Player>", "0.0")
                 }
