@@ -1,10 +1,7 @@
 package net.rfrentrop.tidalremote.player
 
 import net.rfrentrop.tidalremote.MainActivity
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
+import okhttp3.*
 import java.net.InetAddress
 
 // TODO: Implement ipv6?
@@ -16,6 +13,9 @@ data class PlayerHost(
         val version: String
 )
 
+// TODO: Add calls for: play, pause, resume, stop, previous, next, forward, rewind, add, remove, shuffle, add at position
+// TODO: Add video calls for: play, pause, resume, stop, previous, next, forward, rewind, add, remove, add at position
+
 class PlayerManager(
         context: MainActivity
 ): WebSocketListener(){
@@ -23,12 +23,21 @@ class PlayerManager(
         private val client = OkHttpClient()
         var ws: WebSocket? = null
 
+        private var currentPlayer: PlayerHost? = null
+
         fun connectToPlayer(player: PlayerHost) {
                 val request = Request.Builder().url("ws://${player.host.hostAddress}:${player.port}").build()
-                val listener = PlayerSocketListener()
-                ws = client.newWebSocket(request, listener)
+                ws = client.newWebSocket(request, playerSocketListener)
 
                 client.dispatcher.executorService.shutdown()
+        }
+
+        fun disconnectFromPlayer() {
+                currentPlayer?.let {
+                        ws?.close(1000, null)
+                }
+
+                currentPlayer = null
         }
 
         fun sendCommand(command: String) {
@@ -36,12 +45,24 @@ class PlayerManager(
                 ws?.send(command)
         }
 
-        private class PlayerSocketListener: WebSocketListener() {
+        private val playerSocketListener = object : WebSocketListener() {
+
+                override fun onOpen(webSocket: WebSocket, response: Response) {
+                        // TODO: Call a callback, which shows a player is connected
+                        // TODO: Update the current playlist and currently playing track
+                }
+
+                override fun onMessage(webSocket: WebSocket, text: String) {
+                        // TODO: Received a message, which is probably the current state of affairs
+                }
 
                 override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                         webSocket.close(1000, null)
-                        // TODO: The player is disconnecting for a reason
-                }
 
+                        // TODO: Call a callback, which shows the player disconnected
+                        // TODO: Clear playlist and currently playing
+
+                        currentPlayer = null
+                }
         }
 }
