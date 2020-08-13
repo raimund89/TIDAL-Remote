@@ -18,6 +18,7 @@ import androidx.ui.core.setContent
 import androidx.ui.foundation.Icon
 import androidx.ui.foundation.Image
 import androidx.ui.foundation.Text
+import androidx.ui.foundation.clickable
 import androidx.ui.graphics.Color
 import androidx.ui.layout.*
 import androidx.ui.layout.RowScope.weight
@@ -203,7 +204,11 @@ fun MainContent(activity: MainActivity) {
 @Composable
 fun Player(activity: MainActivity) {
     if(activity.currentPage.value.page != Screen.Player) {
-        Column {
+        Column(
+                modifier = Modifier.clickable(onClick = {
+                    activity.navigate(Screen.Player)
+                })
+        ) {
             // TODO: This doesn't work. The state is not updated
             Divider(color = if (activity.manager.user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
             Row(
