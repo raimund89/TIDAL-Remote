@@ -19,6 +19,11 @@ enum class PageType {
     NONE
 }
 
+enum class StreamType {
+    TRACK,
+    VIDEO
+}
+
 // TODO: Move all getter functions to composables
 
 class TidalManager (
@@ -193,6 +198,28 @@ class TidalManager (
                 errorListener = {
                     it.printStackTrace()
                 }
+        )
+
+        queue.add(request)
+    }
+
+    // TODO: Currently, this only works for tracks. Videos are audio-only. No idea why
+    fun getStreamingUrl(type: StreamType, id: String, callback: (url: String) -> Unit) {
+        val params = requestParams()
+
+        params["soundQuality"] = "LOSSLESS"
+
+        val request = TidalRequest(
+            meth = Request.Method.GET,
+            url = API_LOCATION + "${type.name}s/$id/streamUrl",
+            headers = null,
+            params = params,
+            listener = { response ->
+                callback(response.getString("url"))
+            },
+            errorListener = {
+                it.printStackTrace()
+            }
         )
 
         queue.add(request)

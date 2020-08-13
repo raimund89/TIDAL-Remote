@@ -3,18 +3,17 @@ package net.rfrentrop.tidalremote.ui
 import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
 import androidx.compose.Composable
+import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.ContentScale
 import androidx.ui.core.Modifier
-import androidx.ui.foundation.Icon
-import androidx.ui.foundation.Image
-import androidx.ui.foundation.Text
-import androidx.ui.foundation.clickable
+import androidx.ui.foundation.*
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
 import androidx.ui.graphics.RectangleShape
 import androidx.ui.graphics.asImageAsset
 import androidx.ui.layout.*
+import androidx.ui.material.Button
 import androidx.ui.material.IconButton
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Surface
@@ -26,6 +25,7 @@ import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
 import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.PageType
+import net.rfrentrop.tidalremote.tidalapi.StreamType
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.loadPicture
 import org.json.JSONArray
@@ -90,6 +90,8 @@ fun RowTrack(activity: MainActivity, track: JSONObject, covers: Boolean = true) 
     if(track["audioQuality"] as String == "HI_RES")
         flags.add("MASTER")
 
+    val clickState = state {false}
+    
     RowTemplate(
             imageUrl = if(covers) track.getJSONObject("album")["cover"] as String else "",
             text1 = track["title"] as String,
@@ -97,12 +99,54 @@ fun RowTrack(activity: MainActivity, track: JSONObject, covers: Boolean = true) 
             text3 = flags.joinToString(" / "),
             iconId = R.drawable.ic_more,
             onClick = {
-                // TODO: Implement
+                clickState.value = true
             },
             onIconClick = {
 
             }
     )
+
+    if(clickState.value)
+        Dialog(
+            onCloseRequest = {
+                clickState.value = false
+            }
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth() + Modifier.preferredHeight(150.dp)
+            ) {
+                Button(
+                    modifier = Modifier.height(50.dp) + Modifier.fillMaxWidth(),
+                    onClick = {
+                        activity.manager.getStreamingUrl(StreamType.TRACK, track.getInt("id").toString()) { url ->
+                            activity.player.playTrackNow(track, url)
+                        }
+                    }
+                ) {
+                    Text(text = "Play now")
+                }
+                Button(
+                    modifier = Modifier.height(50.dp) + Modifier.fillMaxWidth(),
+                    onClick = {
+                        activity.manager.getStreamingUrl(StreamType.TRACK, track.getInt("id").toString()) { url ->
+                            activity.player.playTrackNext(track, url)
+                        }
+                    }
+                ) {
+                    Text(text = "Play next")
+                }
+                Button(
+                    modifier = Modifier.height(50.dp) + Modifier.fillMaxWidth(),
+                    onClick = {
+                        activity.manager.getStreamingUrl(StreamType.TRACK, track.getInt("id").toString()) { url ->
+                            activity.player.queueTrack(track, url)
+                        }
+                    }
+                ) {
+                    Text(text = "Add to queue")
+                }
+            }
+        }
 }
 
 @Composable

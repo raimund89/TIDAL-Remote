@@ -2,6 +2,7 @@ package net.rfrentrop.tidalremote.player
 
 import net.rfrentrop.tidalremote.MainActivity
 import okhttp3.*
+import org.json.JSONObject
 import java.net.InetAddress
 
 // TODO: Implement ipv6?
@@ -58,11 +59,39 @@ class PlayerManager(
 
                 override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                         webSocket.close(1000, null)
+                        webSocket.cancel()
 
                         // TODO: Call a callback, which shows the player disconnected
                         // TODO: Clear playlist and currently playing
 
                         currentPlayer = null
                 }
+        }
+
+        fun playTrackNow(track: JSONObject, url: String) {
+                val payload = JSONObject()
+                payload.put("command", "playnow")
+                payload.put("track", track)
+                payload.put("url", url)
+
+                ws?.send(payload.toString())
+        }
+
+        fun playTrackNext(track: JSONObject, url: String) {
+                val payload = JSONObject()
+                payload.put("command", "playnext")
+                payload.put("track", track)
+                payload.put("url", url)
+
+                ws?.send(payload.toString())
+        }
+
+        fun queueTrack(track: JSONObject, url: String) {
+                val payload = JSONObject()
+                payload.put("command", "queue")
+                payload.put("track", track)
+                payload.put("url", url)
+
+                ws?.send(payload.toString())
         }
 }
