@@ -23,7 +23,6 @@ import androidx.ui.text.style.TextAlign
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.dp
 import net.rfrentrop.tidalremote.MainActivity
-import net.rfrentrop.tidalremote.R
 import net.rfrentrop.tidalremote.tidalapi.TidalManager
 import net.rfrentrop.tidalremote.tidalapi.loadPicture
 import net.rfrentrop.tidalremote.ui.*
@@ -354,36 +353,11 @@ fun PageRow(activity: MainActivity, refresh: () -> Unit, row: JSONObject) {
         "ALBUM_ITEMS" -> {
             RowHeader(text = "Tracks")
             Column(
-                modifier = Modifier.padding(start = 10.dp, end=10.dp)
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp)
             ) {
                 for (i in 0 until items.length()) {
                     val item = items.getJSONObject(i).getJSONObject("item")
-
-                    // Construct the artist list
-                    val artists = ArrayList<String>()
-                    for(i in 0 until (item["artists"] as JSONArray).length())
-                        artists.add(item.getJSONArray("artists").getJSONObject(i)["name"] as String)
-
-                    // Construct the flags list
-                    val flags = ArrayList<String>()
-                    if(item["explicit"] as Boolean)
-                        flags.add("EXPLICIT")
-                    if(item["audioQuality"] as String == "HI_RES")
-                        flags.add("MASTER")
-
-                    RowTemplate(
-                        number = item.getInt("trackNumber"),
-                        text1 = item.getString("title"),
-                        text2 = artists.joinToString(", "),
-                        text3 = flags.joinToString(" / "),
-                        iconId = R.drawable.ic_more,
-                        onClick = {
-
-                        },
-                        onIconClick = {
-
-                        }
-                    )
+                    RowTrack(activity = activity, track = item, number = true)
                 }
             }
         }

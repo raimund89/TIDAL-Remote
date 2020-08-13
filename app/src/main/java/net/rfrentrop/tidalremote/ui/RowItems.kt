@@ -77,7 +77,7 @@ fun RowAlbum(activity: MainActivity, album: JSONObject) {
 }
 
 @Composable
-fun RowTrack(activity: MainActivity, track: JSONObject, covers: Boolean = true) {
+fun RowTrack(activity: MainActivity, track: JSONObject, covers: Boolean = true, number: Boolean = false) {
     // Construct the artist list
     val artists = ArrayList<String>()
     for(i in 0 until (track["artists"] as JSONArray).length())
@@ -93,7 +93,8 @@ fun RowTrack(activity: MainActivity, track: JSONObject, covers: Boolean = true) 
     val clickState = state {false}
     
     RowTemplate(
-            imageUrl = if(covers) track.getJSONObject("album")["cover"] as String else "",
+            imageUrl = if(covers && !number) track.getJSONObject("album")["cover"] as String else "",
+            number = if(number) track.getInt("trackNumber") else 0,
             text1 = track["title"] as String,
             text2 = artists.joinToString(", "),
             text3 = flags.joinToString(" / "),
@@ -240,7 +241,7 @@ fun RowTemplate(
         }
         else if(number != 0) {
             Text(
-                modifier = Modifier.padding(start = 20.dp),
+                modifier = Modifier.width(30.dp),
                 textAlign = TextAlign.Right,
                 text = "$number."
             )
