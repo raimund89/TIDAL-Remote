@@ -204,7 +204,7 @@ class TidalManager (
 
         val request = TidalRequest(
             meth = Request.Method.GET,
-            url = API_LOCATION + "${type.name}s/$id/streamUrl",
+            url = API_LOCATION + "${type.name.toLowerCase()}s/$id/streamUrl",
             headers = null,
             params = params,
             listener = { response ->
