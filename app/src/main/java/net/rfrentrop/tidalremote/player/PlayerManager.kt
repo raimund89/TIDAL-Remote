@@ -27,6 +27,7 @@ class PlayerManager(
         private var currentPlayer: PlayerHost? = null
         private var currentPlaylist = mutableListOf<JSONObject>()
         private var currentTrack: JSONObject? = null
+        private var currentPosition = 0
 
         fun getCurrentTrack(): JSONObject? {
                 return currentTrack
@@ -38,6 +39,10 @@ class PlayerManager(
 
         fun getCurrentPlayer(): PlayerHost? {
                 return currentPlayer
+        }
+
+        fun getCurrentPosition(): Int {
+                return currentPosition
         }
 
         fun connectToPlayer(player: PlayerHost) {
@@ -53,6 +58,9 @@ class PlayerManager(
                 }
 
                 currentPlayer = null
+                currentPlaylist.clear()
+                currentTrack = null
+                currentPosition = 0
         }
 
         fun sendCommand(command: String) {
@@ -70,15 +78,26 @@ class PlayerManager(
                 override fun onMessage(webSocket: WebSocket, text: String) {
                         // TODO: Received a message, which is probably the current state of affairs
                         val payload = JSONObject(text)
+
                         if(payload.has("playlist")) {
-                                currentPlaylist = MutableList(payload.getJSONArray("payload").length()) {
-                                        payload.getJSONArray("payload")[it] as JSONObject
-                                }
+                                currentPlaylist = if(payload.isNull("playlist"))
+                                        mutableListOf()
+                                else
+                                        MutableList(payload.getJSONArray("payload").length()) {
+                                                payload.getJSONArray("payload")[it] as JSONObject
+                                        }
                         }
 
-                        if(payload.has("currentTrack")) {
-                                currentTrack = payload.getJSONObject("currentTrack")
+                        currentTrack = if(payload.has("currentTrack")) {
+                                payload.getJSONObject("currentTrack")
+                        } else {
+                                null
                         }
+
+                        currentPosition = if(payload.has("position"))
+                                payload.getInt("position")
+                        else
+                                0
                 }
 
                 override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -89,6 +108,9 @@ class PlayerManager(
                         // TODO: Clear playlist and currently playing
 
                         currentPlayer = null
+                        currentPlaylist.clear()
+                        currentTrack = null
+                        currentPosition = 0
                 }
         }
 
