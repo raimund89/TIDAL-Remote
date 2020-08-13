@@ -19,6 +19,7 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Surface
 import androidx.ui.res.imageResource
 import androidx.ui.res.vectorResource
+import androidx.ui.text.style.TextAlign
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.unit.IntSize
 import androidx.ui.unit.dp
@@ -240,6 +241,7 @@ fun RowTemplate(
         else if(number != 0) {
             Text(
                 modifier = Modifier.padding(start = 20.dp),
+                textAlign = TextAlign.Right,
                 text = "$number."
             )
         }
