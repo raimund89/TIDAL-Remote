@@ -1,6 +1,5 @@
 package net.rfrentrop.tidalremote.player
 
-import androidx.ui.foundation.currentTextStyle
 import net.rfrentrop.tidalremote.MainActivity
 import okhttp3.*
 import org.json.JSONObject
@@ -28,6 +27,18 @@ class PlayerManager(
         private var currentPlayer: PlayerHost? = null
         private var currentPlaylist = mutableListOf<JSONObject>()
         private var currentTrack: JSONObject? = null
+
+        fun getCurrentTrack(): JSONObject? {
+                return currentTrack
+        }
+
+        fun getCurrentPlaylist(): List<JSONObject> {
+                return currentPlaylist
+        }
+
+        fun getCurrentPlayer(): PlayerHost? {
+                return currentPlayer
+        }
 
         fun connectToPlayer(player: PlayerHost) {
                 val request = Request.Builder().url("ws://${player.host.hostAddress}:${player.port}").build()
