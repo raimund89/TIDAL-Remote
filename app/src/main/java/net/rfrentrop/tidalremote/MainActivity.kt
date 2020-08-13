@@ -195,54 +195,57 @@ fun MainContent(activity: MainActivity) {
             Screen.Page -> ScreenPage(activity)
             Screen.Settings -> ScreenSettings(activity)
             Screen.Playlist -> ScreenPlaylist(activity)
+            Screen.Player -> ScreenPlayer(activity)
         }
     }
 }
 
 @Composable
 fun Player(activity: MainActivity) {
-    Column {
-        // TODO: This doesn't work. The state is not updated
-        Divider(color = if(activity.manager.user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
-        Row(
-            modifier = Modifier.height(70.dp),
-            verticalGravity = Alignment.CenterVertically
-        ) {
-            Image(
-                    asset = imageResource(R.drawable.emptycover),
-                    modifier = Modifier.aspectRatio(1f),
-                    contentScale = ContentScale.FillHeight
-            )
-            Column(
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
+    if(activity.currentPage.value.page != Screen.Player) {
+        Column {
+            // TODO: This doesn't work. The state is not updated
+            Divider(color = if (activity.manager.user.loggedIn) Color.DarkGray else Color.Red, thickness = 1.dp)
+            Row(
+                    modifier = Modifier.height(70.dp),
+                    verticalGravity = Alignment.CenterVertically
             ) {
-                Text(
-                        text = "Hotel California",
-                        style = MaterialTheme.typography.body1,
-                        color = Color.White,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
+                Image(
+                        asset = imageResource(R.drawable.emptycover),
+                        modifier = Modifier.aspectRatio(1f),
+                        contentScale = ContentScale.FillHeight
                 )
-                Text(
-                        text = "Eagles",
-                        style = MaterialTheme.typography.body2,
-                        color = Color.LightGray,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                )
-            }
+                Column(
+                        modifier = Modifier.padding(start = 10.dp, end = 10.dp) + Modifier.weight(1f, true)
+                ) {
+                    Text(
+                            text = "Hotel California",
+                            style = MaterialTheme.typography.body1,
+                            color = Color.White,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                    )
+                    Text(
+                            text = "Eagles",
+                            style = MaterialTheme.typography.body2,
+                            color = Color.LightGray,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                    )
+                }
 
-            IconButton(onClick = {
-                TODO()
-            }) {
-                Icon(vectorResource(id = R.drawable.ic_play))
+                IconButton(onClick = {
+                    TODO()
+                }) {
+                    Icon(vectorResource(id = R.drawable.ic_play))
+                }
+                IconButton(onClick = {
+                    TODO()
+                }) {
+                    Icon(vectorResource(id = R.drawable.ic_favorite_off))
+                }
+                Spacer(modifier = Modifier.width(10.dp))
             }
-            IconButton(onClick = {
-                TODO()
-            }) {
-                Icon(vectorResource(id = R.drawable.ic_favorite_off))
-            }
-            Spacer(modifier = Modifier.width(10.dp))
         }
     }
 }
