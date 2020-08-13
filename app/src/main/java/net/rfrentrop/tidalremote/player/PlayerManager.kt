@@ -17,6 +17,8 @@ data class PlayerHost(
 // TODO: Add calls for: forward, rewind, remove, shuffle, seek, move in playlist
 // TODO: Add video calls for: play, pause, resume, stop, previous, next, forward, rewind, add, remove, add at position
 
+// TODO: Automatically reconnect after a host temporarily disconnects
+
 class PlayerManager(
         context: MainActivity
 ): WebSocketListener(){
@@ -107,6 +109,13 @@ class PlayerManager(
                         // TODO: Call a callback, which shows the player disconnected
                         // TODO: Clear playlist and currently playing
 
+                        currentPlayer = null
+                        currentPlaylist.clear()
+                        currentTrack = null
+                        currentPosition = 0
+                }
+
+                override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
                         currentPlayer = null
                         currentPlaylist.clear()
                         currentTrack = null
