@@ -26,6 +26,9 @@ import net.rfrentrop.tidalremote.ui.currentData
 import net.rfrentrop.tidalremote.ui.loading
 import org.json.JSONArray
 
+// TODO: Implement paged loading, because max is 100
+// With first scroll, remove the header. Then continue with a lazy loader
+
 @Composable
 fun ScreenPlaylist(activity: MainActivity) {
     val (pageState, refreshPage) = activity.manager.getPlaylist()
