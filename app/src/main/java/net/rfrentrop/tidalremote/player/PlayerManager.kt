@@ -1,9 +1,11 @@
 package net.rfrentrop.tidalremote.player
 
+import android.util.Log
 import net.rfrentrop.tidalremote.MainActivity
 import okhttp3.*
 import org.json.JSONObject
 import java.net.InetAddress
+import javax.net.ssl.HostnameVerifier
 
 // TODO: Implement ipv6?
 
@@ -23,7 +25,11 @@ class PlayerManager(
         context: MainActivity
 ): WebSocketListener(){
 
-        private val client = OkHttpClient()
+        private val client = OkHttpClient
+                .Builder()
+                .retryOnConnectionFailure(true)
+                .hostnameVerifier(HostnameVerifier { s, sslSession -> return@HostnameVerifier true })
+                .build()
         var ws: WebSocket? = null
 
         private var currentPlayer: PlayerHost? = null
@@ -48,16 +54,20 @@ class PlayerManager(
         }
 
         fun connectToPlayer(player: PlayerHost) {
-                val request = Request.Builder().url("ws://${player.host.hostAddress}:${player.port}").build()
+                Log.e("PlayerManager", "Trying to connect to websocket with URL wss://${player.host.hostAddress}:${player.port}.")
+                val request = Request
+                        .Builder()
+                        .url("wss://${player.host.hostAddress}:${player.port}")
+                        .build()
                 ws = client.newWebSocket(request, playerSocketListener)
-
-                client.dispatcher.executorService.shutdown()
         }
 
         fun disconnectFromPlayer() {
                 currentPlayer?.let {
                         ws?.close(1000, null)
                 }
+
+                client.dispatcher.executorService.shutdown()
 
                 currentPlayer = null
                 currentPlaylist.clear()
@@ -73,12 +83,16 @@ class PlayerManager(
         private val playerSocketListener = object : WebSocketListener() {
 
                 override fun onOpen(webSocket: WebSocket, response: Response) {
+                        Log.e("PlayerManager", "Connected!")
                         // TODO: Call a callback, which shows a player is connected
                         // TODO: Update the current playlist and currently playing track
                 }
 
                 override fun onMessage(webSocket: WebSocket, text: String) {
                         // TODO: Received a message, which is probably the current state of affairs
+                        if(text.isEmpty())
+                                return
+
                         val payload = JSONObject(text)
 
                         if(payload.has("playlist")) {
@@ -100,6 +114,11 @@ class PlayerManager(
                                 payload.getInt("position")
                         else
                                 0
+                }
+
+                override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                        Log.e("On failure", response.toString())
+                        t.printStackTrace()
                 }
 
                 override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
